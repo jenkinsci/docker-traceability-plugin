@@ -1,0 +1,177 @@
+<!--
+
+    The MIT License (MIT)
+
+    Copyright (c) 2015, CloudBees, Inc.
+
+    Permission is hereby granted, free of charge, to any person obtaining a copy
+    of this software and associated documentation files (the "Software"), to deal
+    in the Software without restriction, including without limitation the rights
+    to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+    copies of the Software, and to permit persons to whom the Software is
+    furnished to do so, subject to the following conditions:
+
+    The above copyright notice and this permission notice shall be included in
+    all copies or substantial portions of the Software.
+
+    THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+    IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+    FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+    AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+    LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+    OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
+    THE SOFTWARE.
+
+-->
+<?jelly escape-by-default='true'?>
+<j:jelly xmlns:j="jelly:core" xmlns:st="jelly:stapler" xmlns:d="jelly:define" xmlns:l="/lib/layout" xmlns:t="/lib/hudson" xmlns:f="/lib/form" xmlns:i="jelly:fmt">
+
+  <h2>Additional API commands</h2>
+  <h3>Getting info</h3>
+  Docker Deployment <b>READ</b> permission is required for all commands.
+  
+  <h4>$(JENKINS_URL)/docker-traceability/container</h4>
+  Gets a container page. Jenkins will redirect the request to the fingerprint page,
+  which addresses the specified container.
+  <p/>
+  Returns: HTML page describing the container&quot;s fingerprint track.
+  <p/>
+  Query Parameters:
+  <ul>
+    <li><b>id</b> - ID of the container. Only full 64-symbol IDs are supported</li>
+  </ul>
+
+  <h4>$(JENKINS_URL)/docker-traceability/image</h4>
+  Gets an image page by its ID. Jenkins will redirect the request to the fingerprint page,
+  which addresses the specified image.
+  <p/>
+  Returns: HTML page describing the image&quot;s fingerprint track.
+  <p/>
+  Query Parameters:
+  <ul>
+    <li><b>id</b> - ID of the image Only full 64-symbol IDs are supported</li>
+  </ul>
+      
+  <h4>$(JENKINS_URL)/docker-traceability/rawContainerInfo</h4>
+  Retrieves the last available info about the container.
+  <p/>
+  Returns: JSON string similar to <b>docker inspect $(containerId)</b> output.
+  Output is compatible with <a href="https://docs.docker.com/reference/api/docker_remote_api_v1.16/#inspect-a-container">Docker API v.1.16</a> 
+  <p/>
+  Query Parameters:
+  <ul>
+    <li><b>containerId</b> - ID of the container. Only full 64-symbol IDs are supported</li>
+  </ul>
+  
+  <h4>$(JENKINS_URL)/docker-traceability/queryContainer</h4>
+  Retrieves the info about container.
+  <p/>
+  Returns: JSON string similar to <b>docker inspect $(containerId)</b> output.
+  
+  <p/>
+  Query Parameters:
+  <dl>
+    <dt>id</dt>
+    <dd>ID of the container. Only full 64-symbol IDs are supported</dd>
+    <dt>since</dt> 
+    <dd>The time is specified in milliseconds since January 1, 1970, 00:00:00 GMT</dd>
+    <dt>until</dt>
+    <dd>The time is specified in milliseconds since January 1, 1970, 00:00:00 GMT</dd>
+    <dt>mode</dt>
+    <dd>Defines a data to be retrieved. Supported values:
+      <dl>
+        <dt>inspectContaner (default)</dt>
+        <dd>Outputs a JSON array similar to <i>&quot;docker inspect $(containerId)&quot;</i>. 
+            Output is compatible with <a href="https://docs.docker.com/reference/api/docker_remote_api_v1.16/#inspect-a-container">Docker API v.1.16</a> 
+        </dd>
+        <dt>inspectImage</dt>
+        <dd>Outputs a JSON array similar to <i>&quot;docker inspect $(imageId)&quot;</i>. 
+            Output is compatible with <a href="https://docs.docker.com/reference/api/docker_remote_api_v1.16/#inspect-an-image">Docker API v.1.16</a> 
+        </dd>
+        <dt>events</dt>
+        <dd>JSON array of events</dd>
+        <dt>hostInfo</dt>
+        <dd>Outputs a JSON array similar to <i>&quot;docker info&quot;</i></dd>
+        <dt>all</dt>
+        <dd>Outputs all available data in an internal format</dd>
+      </dl>
+    </dd>
+  </dl> 
+  
+  <h4>$(JENKINS_URL)/docker-traceability/rawImageInfo</h4>
+  Retrieves the last available info about the container.
+  <p/>
+  Returns: JSON string similar to <b>docker inspect $(imageId)</b> output.
+  Output is compatible with <a href="https://docs.docker.com/reference/api/docker_remote_api_v1.16/#inspect-an-image">Docker API v.1.16</a> 
+  <p/>
+  Query Parameters:
+  <ul>
+    <li><b>id</b> - ID of the image. Only full 64-symbol IDs are supported</li>
+  </ul>
+  
+  <h3>Managing data</h3>
+  Docker Deployment <b>SUBMIT</b> permission is required for all commands.
+  
+  <h4>$(JENKINS_URL)/docker-traceability/submitContainerStatus</h4>
+  Allows to submit the current container status snapshot with a minimal set of
+  parameters. Outputs of <i>docker inspect $(containerId)</i> can be directly 
+  submitted to Jenkins server using this command.
+  <p/>
+  Parameters:
+  <ul>
+    <li><b>inspectData</b> - JSON data being generated by <i>docker inspect $(containerId)</i></li>
+    <li><b>hostId</b> - Optional ID of the source Docker host. Default value - &quot;unknown&quot;</li>
+    <li><b>hostName</b> - Optional ID of the source Docker host name. Default value - &quot;unknown&quot;</li>
+    <li><b>status</b> - Optional status of the container.  
+        Default value - &quot;NONE&quot; (means that there is no status change)</li>
+    <li><b>time</b> - Optional event time, the current server's time will be used by default.
+        The time is specified in milliseconds since January 1, 1970, 00:00:00 GMT</li>
+    <li><b>imageName</b> - Optional name of the image. It can be extracted from &quot;docker images&quot; command output</li>    
+    <li><b>environment</b> - Optional free-style string describing the environment</li>
+  </ul>
+  <p/>
+  Call examples: 
+  <ul>
+    <li>
+      <i>curl http://localhost:8080/jenkins/docker-traceability/submitContainerStatus 
+        --data-urlencode inspectData="$(docker inspect <b>CONTAINER_ID</b>)"</i>
+    </li>
+  </ul>
+  
+  <h4>$(JENKINS_URL)/docker-traceability/submitEvent</h4>
+  Submits an event using the extended JSON API. 
+  This endpoint can be used by scripts to submit the full available info about
+  the container and its environment in a single command.
+  <p/>
+  Parameters:
+  <ul>
+    <li>
+      <b>json</b> - JSON data being generated by an external script. 
+      The format is described in <b style="color:red">TODO: reference to Wiki or external docs</b>.
+    </li>
+  </ul>
+  
+  <h4>$(JENKINS_URL)/docker-traceability/removeContainer</h4>
+  Removes an obsolete container reference from the DockerTraceability registry. 
+  The data from container fingerprints won't be deleted, so the record will be 
+  completely restored after a new submission if its gets deleted due to a mistake.
+  <p/>
+  Parameters:
+  <ul>
+    <li><b>containerId</b> - ID of the container. Only full 64-symbol IDs are supported</li>
+  </ul>
+  
+  <h2>Test Commands <b style="color:red">(temporary)</b></h2>
+  <h4>$(JENKINS_URL)/docker-traceability/doTestSubmitBuildRef()</h4>
+  Creates a fake docker fingerprint to simplify the testing. Parameters:
+  <ul>
+    <li>imageId - Docker image ID</li>
+    <li>jobName - name of the job to be updated. The image will be added to the last build</li>
+  </ul>
+  <p/>
+  Sample imageID: 5366517d611967756a43c63a3223dbf645c5e9be66d594d86802dee143aad93a
+  <p/>
+  Call example: <i>curl http://localhost:8080/jenkins/docker-traceability/testSubmitBuildRef --data-urlencode imageId=4300417211ebb75b48b06ed5640d641778f312072d24b37978682345cbb362b1 --data-urlencode jobName=test</i>
+  
+
+</j:jelly>

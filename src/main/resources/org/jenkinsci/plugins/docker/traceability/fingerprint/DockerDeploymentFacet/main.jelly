@@ -1,0 +1,80 @@
+<!--
+
+    The MIT License (MIT)
+
+    Copyright (c) 2015, CloudBees, Inc.
+
+    Permission is hereby granted, free of charge, to any person obtaining a copy
+    of this software and associated documentation files (the "Software"), to deal
+    in the Software without restriction, including without limitation the rights
+    to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+    copies of the Software, and to permit persons to whom the Software is
+    furnished to do so, subject to the following conditions:
+
+    The above copyright notice and this permission notice shall be included in
+    all copies or substantial portions of the Software.
+
+    THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+    IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+    FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+    AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+    LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+    OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
+    THE SOFTWARE.
+
+-->
+<?jelly escape-by-default='true'?>
+<j:jelly xmlns:j="jelly:core" xmlns:st="jelly:stapler" xmlns:d="jelly:define" 
+         xmlns:l="/lib/layout" xmlns:t="/lib/hudson" xmlns:f="/lib/form"
+         xmlns:docker="/org/jenkinsci/plugins/docker/traceability/lib">
+  <j:set var="report" value="${it.latest.event}"/>
+  <j:set var="container" value="${report.container}"/>
+  <h2>
+    ${%Container Info}
+  </h2>
+  The information below has been retrieved from the latest report (<docker:eventTime time="${report.event.time}"/>).
+  <ul>
+    <li>${%Name}: ${container.name}</li>
+    <li>${%Container ID}: ${container.id}</li>
+    <li>${%Origin}: <docker:containerOriginal id="${container.id}"/></li>
+    <li>${%Created on}: ${container.created}</li>
+  </ul>
+  
+  <h3>
+    ${%Sources}
+  </h3>
+  <ul>  
+    <li>${%Base image}: <docker:image id="${report.imageId}"/></li>
+    <li>${%Parent images}: <docker:parentImages parents="${report.parents}"/></li>
+  </ul>
+  
+  <h3>
+    ${%Status}
+  </h3>
+  <ul>
+    <li>${%Running on}: ${report.hostInfo.name} (${%ID}: ${report.hostInfo.ID})</li>
+    <li>${%Last status}: ${it.lastStatus}</li>
+    <li>${%Pid}: ${container.state.pid}</li>
+    <li>${%Exit code}: ${container.state.exitCode}</li>
+    <li>${%Started at}: ${container.state.startedAt}</li>
+    <li>${%Finished at}: ${container.state.finishedAt}</li>
+  </ul>
+
+ 
+  
+  <h2>
+    ${%Raw data}
+  </h2>
+  <ul>
+    <li>
+      <a href="${rootURL}/docker-traceability/rawContainerInfo?containerId=${it.latest.containerId}">
+        ${%Last record in JSON}
+      </a>
+    </li>
+  </ul>
+  <h2>
+    <img style="width:32px; height:32px" src="${resURL}/plugin/docker-traceability/images/32x32/docker.png"/>
+    ${%Deployment Events}
+  </h2>
+  <st:include page="table.jelly"/>
+</j:jelly>
