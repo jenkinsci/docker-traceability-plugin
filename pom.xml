@@ -31,11 +31,11 @@
         <groupId>org.jenkins-ci.plugins</groupId>
         <artifactId>plugin</artifactId>
         <version>1.565</version>
-        <relativePath/>
+        <relativePath />
     </parent>
 
     <artifactId>docker-traceability</artifactId>
-    <version>1.0-alpha-1-SNAPSHOT</version>
+    <version>1.0-beta-1</version>
     <packaging>hpi</packaging>
 
     <name>CloudBees Docker Traceability</name>
@@ -52,7 +52,7 @@
         <connection>scm:git:git://git@github.com:jenkinsci/docker-traceability-plugin.git</connection>
         <developerConnection>scm:git:https://github.com/jenkinsci/docker-traceability-plugin.git</developerConnection>
         <url>https://github.com/jenkinsci/docker-traceability-plugin</url>
-        <tag>HEAD</tag>
+        <tag>docker-traceability-1.0-beta-1</tag>
     </scm>
 
     <licenses>
