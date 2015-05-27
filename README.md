@@ -1,4 +1,4 @@
-# CloudBees Docker Traceability Plugin
+# CloudBees Docker Traceability
 
 This [Jenkins](http://jenkins-ci.org) plugin allows the tracking of the creation and use of Docker containers in Jenkins and their future use.
 
@@ -19,14 +19,14 @@ This [Jenkins](http://jenkins-ci.org) plugin allows the tracking of the creation
 
 ##Plugin setup
 
-1. Install Docker Traceability plugin from Jenkins Update Center
-2. If you are going to use Docker Traceability for images built on Jenkins, consider the installation of other
-3. Configure the security. This step is **very important**, because the plugin can store raw JSON, which may contain sensitive info like passwords
+1. Install CloudBees Docker Traceability plugin from Jenkins Update Center
+2. Install other Jenkins plugins, which produce image fingerprints to be traced by the plugin (see [Integrations][#Integrations])
+3. Configure security. This step is **very important**, because the plugin can store raw JSON, which may contain sensitive info like passwords
  * The plugin introduces new permissions, which allow to restrict the access
  * **Read** - Allows to retrieve details like full container/info dumps. 
       Web interfaces are being managed by common Jenkins Read permission
- * **Submit** - Allows to submit deployment records from [API](#API)
- * **Delete** - Allows to delete deployment records or entire fingerprints
+ * **Submit** - Allows the submission deployment records from the [remote API](#API)
+ * **Delete** - Allows the deletion deployment records or entire fingerprints
 
 Currently, the plugin does not require additional configuration.
 
@@ -40,7 +40,7 @@ The section is under construction
 
 ##Submitting deployment records
 
-Currently the plugin does not support an automatic polling of events from external Docker servers. The events should be submitted by external clients or other Jenkins plugins.
+The plugin does not support an automatic polling of events from external Docker servers. The events should be submitted by external clients or other Jenkins plugins.
 
 **Warning!** Currently the plugin accepts the info for previously registered fingerprints only. Other submissions will be ignored. Initial image records should be created by other plugins using (see [Integrations][#Integrations])
 
@@ -80,7 +80,7 @@ For each container record the plugin publishes the info on the container summary
 ![Docker image page](/doc/images/image-page.png)
 
 
-If an external client submits an info about the image (can be retrieved using *docker inspect imageId* command), Docker Traceability Plugin captures this image and adds a new facet to the image fingerprint page.
+If an external client submits information about the image (which can be retrieved using *docker inspect imageId* command), the plugin captures this image and adds a new facet to the image fingerprint page.
 
 ![Docker image info facet](/doc/images/docker-image-facet.png)
 
@@ -98,6 +98,6 @@ See [Docker Commons Plugin Wiki page][docker-commons] to get an info about exist
 
 #API
 
-The detailed description of API endpoints is available in the "api" page of the Docker Traceability root action (see *$(JENKINS_URL)/docker-traceability/api*)
+The detailed description of API endpoints is available in the "api" page of the "Docker Traceability" root action (see *$(JENKINS_URL)/docker-traceability/api*)
 
 [docker-commons]: https://wiki.jenkins-ci.org/display/JENKINS/Docker+Commons+Plugin
