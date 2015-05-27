@@ -20,7 +20,7 @@ This [Jenkins](http://jenkins-ci.org) plugin allows the tracking of the creation
 ##Plugin setup
 
 1. Install CloudBees Docker Traceability plugin from Jenkins Update Center
-2. Install other Jenkins plugins, which produce image fingerprints to be traced by the plugin (see [Integrations][#Integrations])
+2. Install other Jenkins plugins, which produce image fingerprints to be traced by the plugin (see [Integrations](#Integrations))
 3. Configure security. This step is **very important**, because the plugin can store raw JSON, which may contain sensitive info like passwords
  * The plugin introduces new permissions, which allow to restrict the access
  * **Read** - Allows to retrieve details like full container/info dumps. 
@@ -42,7 +42,7 @@ The section is under construction
 
 The plugin does not support an automatic polling of events from external Docker servers. The events should be submitted by external clients or other Jenkins plugins.
 
-**Warning!** Currently the plugin accepts the info for previously registered fingerprints only. Other submissions will be ignored. Initial image records should be created by other plugins using (see [Integrations][#Integrations])
+**Warning!** Currently the plugin accepts the info for previously registered fingerprints only. Other submissions will be ignored. Initial image records should be created by other plugins using (see [Integrations](#Integrations))
 
 From external items using REST API
 -----
