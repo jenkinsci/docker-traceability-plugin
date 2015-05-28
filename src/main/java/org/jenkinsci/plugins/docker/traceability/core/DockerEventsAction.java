@@ -46,6 +46,7 @@ import hudson.security.Permission;
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Date;
 import java.util.HashSet;
 import java.util.LinkedList;
@@ -109,11 +110,15 @@ public class DockerEventsAction implements RootAction, SearchableModelObject, Sa
      * @return Docker container IDs.
      */
     public synchronized @Nonnull Set<String> getContainerIDs() {
-        return (containerIDs == null) ? new HashSet<String>() : new TreeSet<String>(containerIDs);
+        return (containerIDs == null) ?  Collections.<String>emptySet() : new TreeSet<String>(containerIDs);
     }
     
     @Exported
     public synchronized @Nonnull List<DockerAPIReport> records() {
+        if (containerIDs == null) {
+            return Collections.emptyList();
+        }
+        
         final List<DockerAPIReport> res = new ArrayList<DockerAPIReport>(containerIDs.size());
         for (String containerId : containerIDs) {
             DockerAPIReport apiReport = DockerAPIReport.forContainer(containerId);
@@ -180,6 +185,10 @@ public class DockerEventsAction implements RootAction, SearchableModelObject, Sa
      * @return List of container records for all entries.
      */
     public synchronized @Nonnull List<DockerContainerRecord> getContainerRecords() {
+        if (containerIDs == null) {
+            return Collections.emptyList();
+        }
+        
         final List<DockerContainerRecord> res = new ArrayList<DockerContainerRecord>(containerIDs.size());
         for (String containerId : containerIDs) {
             DockerContainerRecord rec = DockerTraceabilityHelper.getLastContainerRecord(containerId);
@@ -222,10 +231,18 @@ public class DockerEventsAction implements RootAction, SearchableModelObject, Sa
     public void doTestSubmitBuildRef(StaplerRequest req, StaplerResponse rsp,
             @QueryParameter(required = true) String imageId,
             @QueryParameter(required = true) String jobName) throws IOException, ServletException {
-        Run latest = Jenkins.getInstance().getItem(jobName, Jenkins.getInstance(), 
-                AbstractProject.class).getLastBuild();
+        final Jenkins j = Jenkins.getInstance();
+        if (j == null) {
+            throw new IOException("Jenkins instance is not active");
+        }
+        final AbstractProject item = j.getItem(jobName, j, AbstractProject.class);
+        final Run latest = item != null ? item.getLastBuild() : null;
+        if (latest == null) {
+            throw new IOException("Cannot find a project or run to modify"); 
+        }
+        
         DockerFingerprints.addFromFacet(null,imageId, latest);
-        rsp.sendRedirect2(Jenkins.getInstance().getRootUrl());
+        rsp.sendRedirect2(j.getRootUrl());
     }
        
     /**
@@ -562,9 +579,13 @@ public class DockerEventsAction implements RootAction, SearchableModelObject, Sa
         return searchIndexBuilder;
     }
 
-    protected final XmlFile getConfigFile() {
-        return new XmlFile(XSTREAM, new File(Jenkins.getInstance().getRootDir(), 
-                DockerEventsAction.class.getName()+".xml"));
+    private @Nonnull XmlFile getConfigFile() throws IOException {
+        final Jenkins j = Jenkins.getInstance();
+        if (j==null) {
+            throw new IOException("Jenkins instance is not ready, cannot retrieve the root directory");
+        }
+        
+        return new XmlFile(XSTREAM, new File(j.getRootDir(), DockerEventsAction.class.getName()+".xml"));
     }
     
     @Override
@@ -582,12 +603,13 @@ public class DockerEventsAction implements RootAction, SearchableModelObject, Sa
             containerIDs.clear();
         }
 
-        XmlFile config = getConfigFile();
+        XmlFile config = null; 
         try {
+            config = getConfigFile();
             if(config.exists())
                 config.unmarshal(this);
         } catch (IOException e) {
-            LOGGER.log(Level.SEVERE, "Failed to load "+config,e);
+            LOGGER.log(Level.SEVERE, "Failed to load the configuration from config path = "+config,e);
         }
     }
     
