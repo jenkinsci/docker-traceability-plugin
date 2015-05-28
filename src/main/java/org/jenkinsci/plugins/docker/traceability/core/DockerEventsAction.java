@@ -46,7 +46,6 @@ import hudson.security.Permission;
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.Date;
 import java.util.HashSet;
 import java.util.LinkedList;
@@ -67,7 +66,6 @@ import org.jenkinsci.plugins.docker.commons.fingerprint.DockerFingerprints;
 import org.jenkinsci.plugins.docker.traceability.DockerEventListener;
 import org.jenkinsci.plugins.docker.traceability.DockerTraceabilityPlugin;
 import org.jenkinsci.plugins.docker.traceability.fingerprint.DockerContainerRecord;
-import org.jenkinsci.plugins.docker.traceability.model.DockerRecordsRegistry;
 import org.jenkinsci.plugins.docker.traceability.fingerprint.DockerDeploymentFacet;
 import org.jenkinsci.plugins.docker.traceability.model.DockerAPIReport;
 import org.jenkinsci.plugins.docker.traceability.model.DockerEvent;
@@ -155,11 +153,6 @@ public class DockerEventsAction implements RootAction, SearchableModelObject, Sa
             save();
         }
     }
-   
-    public Set<String> getImageIDs() {
-        //TODO: add filters
-        return FingerprintsHelper.getImagesWithFingerprints();
-    }
 
     @Restricted(NoExternalUse.class)
     public @CheckForNull Fingerprint getFingerprint(@Nonnull String containerId) {
@@ -212,34 +205,7 @@ public class DockerEventsAction implements RootAction, SearchableModelObject, Sa
         return "docker-traceability";
     }
     
-    /**
-     * Retrieves all registered {@link DockerDeploymentFacet}s.
-     * @return Created record entities
-     */
-    public List<DockerRecordsRegistry> getAllEvents() {
-        if (!hasPermission(DockerTraceabilityPlugin.READ_DETAILS)) {
-            return new LinkedList<DockerRecordsRegistry>();
-        }
-        
-        List<DockerRecordsRegistry> result = new LinkedList<DockerRecordsRegistry>();
-        Set<String> imageIDs = FingerprintsHelper.getImagesWithFingerprints();
-        for (String imageId : imageIDs) {
-            final Fingerprint fp;
-            try {
-                fp = DockerFingerprints.of(imageId);
-            } catch(IOException ex) {
-                // TODO: just ignore for now
-                continue;
-            }
-            DockerDeploymentFacet facet = FingerprintsHelper.getFacet(fp, DockerDeploymentFacet.class);
-            if (facet != null) { // The image has not been deployed yet
-                result.add(new DockerRecordsRegistry(facet.getDeploymentRecords()));
-            }
-        }
-        return result;
-    }
     
-    //TODO: API to export events with by-image, by-container and by-host filtering
 
     //TODO: remove
     /**
@@ -430,6 +396,7 @@ public class DockerEventsAction implements RootAction, SearchableModelObject, Sa
         mapper.writeValue(rsp.getOutputStream(), out);
     }  
     
+    //TODO: More filtering
     /**
      * Queries container statuses via API.
      * The output will be retrieved in JSON. Supports filters.
