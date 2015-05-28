@@ -29,7 +29,6 @@ import javax.annotation.CheckForNull;
 import javax.annotation.Nonnull;
 import org.jenkinsci.plugins.docker.traceability.core.DockerTraceabilityHelper;
 import org.jenkinsci.plugins.docker.traceability.model.DockerEvent;
-import org.jenkinsci.plugins.docker.traceability.model.DockerEventType;
 import org.jenkinsci.plugins.docker.traceability.model.DockerTraceabilityReport;
 import org.kohsuke.stapler.export.Exported;
 import org.kohsuke.stapler.export.ExportedBean;

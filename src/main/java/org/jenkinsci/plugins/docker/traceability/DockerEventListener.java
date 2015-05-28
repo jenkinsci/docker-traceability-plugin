@@ -25,7 +25,6 @@ package org.jenkinsci.plugins.docker.traceability;
 
 import hudson.ExtensionList;
 import hudson.ExtensionPoint;
-import hudson.model.Fingerprint;
 import javax.annotation.Nonnull;
 import jenkins.model.Jenkins;
 import org.jenkinsci.plugins.docker.traceability.fingerprint.DockerDeploymentFacet;

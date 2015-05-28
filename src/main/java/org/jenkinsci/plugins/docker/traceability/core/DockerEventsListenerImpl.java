@@ -33,14 +33,12 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.annotation.CheckForNull;
 import javax.annotation.Nonnull;
-import jenkins.model.Jenkins;
 import org.jenkinsci.plugins.docker.commons.fingerprint.DockerFingerprints;
 import org.jenkinsci.plugins.docker.traceability.DockerEventListener;
 import org.jenkinsci.plugins.docker.traceability.model.DockerTraceabilityReport;
 import org.jenkinsci.plugins.docker.traceability.DockerTraceabilityPlugin;
 import org.jenkinsci.plugins.docker.traceability.fingerprint.DockerDeploymentRefFacet;
 import org.jenkinsci.plugins.docker.traceability.fingerprint.DockerInspectImageFacet;
-import org.jenkinsci.plugins.docker.traceability.util.FingerprintsHelper;
 
 /**
  * Listens for {@link DockerTraceabilityReport}s and pushes them to fingerprints.

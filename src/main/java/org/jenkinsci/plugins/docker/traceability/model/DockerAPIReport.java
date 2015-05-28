@@ -23,7 +23,6 @@
  */
 package org.jenkinsci.plugins.docker.traceability.model;
 
-import com.fasterxml.jackson.annotation.JsonProperty;
 import com.github.dockerjava.api.command.InspectContainerResponse;
 import com.github.dockerjava.api.command.InspectContainerResponse.ContainerState;
 import com.github.dockerjava.api.command.InspectImageResponse;
@@ -31,11 +30,9 @@ import hudson.model.Fingerprint;
 import hudson.model.Fingerprint.BuildPtr;
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.Hashtable;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 import javax.annotation.CheckForNull;
 import javax.annotation.Nonnull;
 import org.jenkinsci.plugins.docker.commons.fingerprint.DockerFingerprints;

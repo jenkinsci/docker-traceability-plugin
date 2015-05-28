@@ -26,7 +26,6 @@ package org.jenkinsci.plugins.docker.traceability.model;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import java.io.IOException;
-import java.io.InputStream;
 import org.jenkinsci.plugins.docker.traceability.samples.JSONSamples;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
