@@ -76,7 +76,6 @@ public class FingerprintsHelper {
             return result;
         }
 
-        //TODO: Just4test, horrible performance, we need caching
         for (AbstractProject item : j.getAllItems(AbstractProject.class)) {
             RunList<Run> runs = item.getBuilds();
             for (Run run : runs) {

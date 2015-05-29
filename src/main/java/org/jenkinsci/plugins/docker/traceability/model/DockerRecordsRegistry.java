@@ -35,7 +35,7 @@ import org.kohsuke.stapler.export.ExportedBean;
  * @author Oleg Nenashev
  */
 @ExportedBean
-public class DockerRecordsRegistry implements Serializable {
+public class DockerRecordsRegistry {
     
     private static final long serialVersionUID = 1L;
     

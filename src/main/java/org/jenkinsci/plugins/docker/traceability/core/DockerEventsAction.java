@@ -164,12 +164,6 @@ public class DockerEventsAction implements RootAction, SearchableModelObject, Sa
         return DockerTraceabilityHelper.of(containerId);
     }
     
-    public @Nonnull String getDeploymentStats(@Nonnull Fingerprint fp, @Nonnull String containerId) {
-        DockerDeploymentFacet facet = FingerprintsHelper.getFacet(fp, DockerDeploymentFacet.class);
-        //TODO: more info
-        return facet != null ? "Yes, " + facet.getDeploymentRecords().size() + " record(s)" : "No";
-    } 
-    
     public @CheckForNull DockerDeploymentFacet getDeploymentFacet(@Nonnull String containerId) {
         Fingerprint fp = DockerTraceabilityHelper.of(containerId);
         return (fp != null) ? FingerprintsHelper.getFacet(fp, DockerDeploymentFacet.class) : null;        

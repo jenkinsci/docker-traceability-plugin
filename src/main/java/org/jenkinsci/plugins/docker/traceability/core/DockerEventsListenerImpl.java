@@ -93,8 +93,7 @@ public class DockerEventsListenerImpl extends DockerEventListener {
                     imageInfo, report.getImageName());         
         }
         
-        // Process commands
-        // TODO: implement
+        // Process other commands when it is required
     }
 
     @Override
