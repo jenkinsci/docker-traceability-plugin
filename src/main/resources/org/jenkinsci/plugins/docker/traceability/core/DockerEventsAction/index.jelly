@@ -50,7 +50,7 @@ THE SOFTWARE.
 <j:jelly xmlns:j="jelly:core" xmlns:st="jelly:stapler" xmlns:d="jelly:define" 
          xmlns:l="/lib/layout" xmlns:t="/lib/hudson" xmlns:f="/lib/form" xmlns:i="jelly:fmt"
          xmlns:docker="/org/jenkinsci/plugins/docker/traceability/lib">
-  <l:layout title="${%tDocker Traceability}" permission="${it.requiredPermission}">
+  <l:layout title="${%Docker Traceability}" permission="${it.requiredPermission}">
     <st:include it="${app}" page="sidepanel.jelly"/>
     <l:main-panel>
       <h1>
