@@ -74,16 +74,16 @@ public class DockerEventsListenerImpl extends DockerEventListener {
         final InspectContainerResponse containerInfo = report.getContainer();
         @CheckForNull Fingerprint containerFP = null;
         if (containerInfo != null) {
-           final String containerId = containerInfo.getId();
-           containerFP = DockerTraceabilityHelper.make(containerId);
-           if (containerFP != null) {
-                DockerDeploymentFacet facet = DockerDeploymentFacet.addEvent(containerFP, report);
+            final String containerId = containerInfo.getId();
+            containerFP = DockerTraceabilityHelper.make(containerId);
+            if (containerFP != null) {
+                DockerDeploymentFacet.addEvent(containerFP, report);
                 DockerDeploymentRefFacet.addRef(imageFP, containerInfo.getId());
-           } else {
-               LOGGER.log(Level.WARNING, "Cannot retrieve the fingerprint for containerId={0}", containerInfo.getId());
-           }
-           // Notify listeners
-           DockerEventListener.fireNewDeployment(containerId);
+            } else {
+                LOGGER.log(Level.WARNING, "Cannot retrieve the fingerprint for containerId={0}", containerInfo.getId());
+            }
+            // Notify listeners
+            DockerEventListener.fireNewDeployment(containerId);
         }
         
         // Update image facets by a new info if available

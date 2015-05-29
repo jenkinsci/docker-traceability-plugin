@@ -378,7 +378,6 @@ public class DockerAPIReport {
         
         final InspectImageResponse inspectImageResponse = report.getImage();
         final InspectContainerResponse inspectContainerResponse = report.getContainer();
-        assert inspectContainerResponse != null;
         if (inspectContainerResponse == null) {
             return null;
         }

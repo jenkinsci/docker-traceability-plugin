@@ -89,7 +89,10 @@ public class DockerEventListener implements ExtensionPoint {
      * @return A list of all {@link DockerEventListener} extensions.
      */
     public static @Nonnull ExtensionList<DockerEventListener> all() {
-        // TODO: null checks
-        return Jenkins.getInstance().getExtensionList(DockerEventListener.class);
+        final Jenkins j = Jenkins.getInstance();
+        if (j == null) {
+            return ExtensionList.create((Jenkins) null, DockerEventListener.class);
+        }
+        return j.getExtensionList(DockerEventListener.class);
     }
 }

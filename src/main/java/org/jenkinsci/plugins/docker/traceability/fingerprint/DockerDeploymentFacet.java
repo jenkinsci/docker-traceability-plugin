@@ -97,6 +97,9 @@ public class DockerDeploymentFacet extends FingerprintFacet {
      */
     public static @CheckForNull DockerDeploymentFacet getDeploymentFacet(String containerId) {      
         Fingerprint fp = DockerTraceabilityHelper.of(containerId);
+        if (fp == null) {
+            return null;
+        }
         return FingerprintsHelper.getFacet(fp, DockerDeploymentFacet.class);     
     }
     
