@@ -31,6 +31,7 @@ import java.util.Locale;
 import javax.annotation.CheckForNull;
 import javax.annotation.Nonnull;
 import jenkins.model.FingerprintFacet;
+import org.jenkinsci.plugins.docker.commons.fingerprint.DockerFingerprintFacet;
 import org.jenkinsci.plugins.docker.traceability.core.DockerTraceabilityHelper;
 import org.jenkinsci.plugins.docker.traceability.model.DockerEventType;
 import org.jenkinsci.plugins.docker.traceability.model.DockerTraceabilityReport;
@@ -43,7 +44,7 @@ import org.jenkinsci.plugins.docker.traceability.util.FingerprintsHelper;
  * This facet should be added to container {@link Fingerprint}s.
  * @author Oleg Nenashev
  */
-public class DockerDeploymentFacet extends FingerprintFacet {
+public class DockerDeploymentFacet extends DockerFingerprintFacet {
        
     private final List<DockerContainerRecord> deploymentRecords 
             = new ArrayList<DockerContainerRecord>();
