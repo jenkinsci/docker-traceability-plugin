@@ -83,7 +83,7 @@ public class DockerTraceabilityRootActionTest {
         createTestBuildRefFacet(imageId, "test");
         
         // Submit JSON
-        action.doSubmitContainerStatus(req, rsp, inspectData, null, null, null, 0, null, null);
+        action.doSubmitContainerStatus(inspectData, null, null, null, 0, null, null);
         
         // Ensure there's a fingerprint for container, which refers the image
         final DockerDeploymentFacet containerFacet = assertExistsDeploymentFacet(containerId, imageId);
@@ -184,11 +184,11 @@ public class DockerTraceabilityRootActionTest {
         assertEquals(2, action.getContainerIDs().size());
         
         // Remove data using API. First entry is non-existent
-        action.doRemoveContainer(req, rsp, id3);
+        action.doDeleteContainer(id3);
         assertEquals(2, action.getContainerIDs().size());
-        action.doRemoveContainer(req, rsp, id1);
+        action.doDeleteContainer(id1);
         assertEquals(1, action.getContainerIDs().size());
-        action.doRemoveContainer(req, rsp, id1);
+        action.doDeleteContainer(id1);
         assertEquals(1, action.getContainerIDs().size());
         
         // Reload the data and ensure the status has been persisted correctly

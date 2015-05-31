@@ -241,8 +241,6 @@ public class DockerTraceabilityRootAction implements RootAction, SearchableModel
        
     /**
      * Submits a new event through Jenkins API.
-     * @param req Incoming request
-     * @param rsp Output response
      * @param inspectData JSON output of docker inspect container (array of container infos)
      * @param hostName Optional name of the host, which submitted the event
      *      &quot;unknown&quot; by default
@@ -255,12 +253,13 @@ public class DockerTraceabilityRootAction implements RootAction, SearchableModel
      *      Default value - current time
      * @param environment Optional field, which describes the environment
      * @param imageName Optional field, which provides the name of the image
+     * @return {@link HttpResponse}
      * @throws IOException Request processing error
      * @throws ServletException Servlet error
      */
     //TODO: parameters check
     @RequirePOST
-    public void doSubmitContainerStatus(StaplerRequest req, StaplerResponse rsp,
+    public HttpResponse doSubmitContainerStatus(
             @QueryParameter(required = true) String inspectData,
             @QueryParameter(required = false) String hostId,
             @QueryParameter(required = false) String hostName,
@@ -292,21 +291,24 @@ public class DockerTraceabilityRootAction implements RootAction, SearchableModel
                     new LinkedList<String>(), effectiveEnvironment);
             DockerTraceabilityReportListener.fire(res);
         }
+        return HttpResponses.ok();
     } 
        
     /**
      * Submits a new {@link DockerTraceabilityReport} via API.
      * @param json String representation of {@link DockerTraceabilityReport}
+     * @return {@link HttpResponse}
      * @throws ServletException Servlet error
      * @throws IOException Processing error
      */
     @RequirePOST
-    public void doSubmitReport(@QueryParameter(required = true) String json) 
+    public HttpResponse doSubmitReport(@QueryParameter(required = true) String json) 
             throws IOException, ServletException { 
         checkPermission(DockerTraceabilityPlugin.SUBMIT);
         ObjectMapper mapper = new ObjectMapper();
         final DockerTraceabilityReport report = mapper.readValue(json, DockerTraceabilityReport.class);
         DockerTraceabilityReportListener.fire(report);
+        return HttpResponses.ok();
     }
     
     /**
@@ -333,18 +335,16 @@ public class DockerTraceabilityRootAction implements RootAction, SearchableModel
     
     /**
      * Removes the container reference from the registry.
-     * @param req Stapler request
-     * @param rsp Stapler response
      * @param id Container ID. Method supports full 64-char IDs only.
      * @throws IOException Cannot save the updated {@link DockerTraceabilityRootAction}
      * @throws ServletException Servlet exception
      */
     @RequirePOST
-    public void doRemoveContainer(StaplerRequest req, StaplerResponse rsp, 
-            @QueryParameter(required = true) String id) 
+    public HttpResponse doDeleteContainer(@QueryParameter(required = true) String id) 
             throws IOException, ServletException {  
         checkPermission(DockerTraceabilityPlugin.DELETE);
         removeContainerID(id);
+        return HttpResponses.ok();
     }
     
     /**
