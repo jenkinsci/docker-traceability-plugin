@@ -34,7 +34,7 @@ import java.util.logging.Logger;
 import javax.annotation.CheckForNull;
 import javax.annotation.Nonnull;
 import org.jenkinsci.plugins.docker.commons.fingerprint.DockerFingerprints;
-import org.jenkinsci.plugins.docker.traceability.DockerEventListener;
+import org.jenkinsci.plugins.docker.traceability.model.DockerTraceabilityReportListener;
 import org.jenkinsci.plugins.docker.traceability.model.DockerTraceabilityReport;
 import org.jenkinsci.plugins.docker.traceability.DockerTraceabilityPlugin;
 import org.jenkinsci.plugins.docker.traceability.fingerprint.DockerDeploymentRefFacet;
@@ -45,17 +45,17 @@ import org.jenkinsci.plugins.docker.traceability.fingerprint.DockerInspectImageF
  * @author Oleg Nenashev
  */
 @Extension
-public class DockerEventsListenerImpl extends DockerEventListener {
+public class DockerTraceabilityReportListenerImpl extends DockerTraceabilityReportListener {
 
     private final static Logger LOGGER = Logger.getLogger(DockerTraceabilityPlugin.class.getName());
     
     @Override
-    public void onEvent(DockerTraceabilityReport event) {
-        final String imageId = event.getImageId();
+    public void onReport(DockerTraceabilityReport report) {
+        final String imageId = report.getImageId();
         LOGGER.log(Level.FINE, "Got an event for image {0}", imageId);       
         
         try {
-            processEvent(event);
+            processEvent(report);
         } catch (Throwable ex) { // Catch everything
             LOGGER.log(Level.WARNING, "Cannot retrieve the fingerprint", ex);
         } 
@@ -83,7 +83,7 @@ public class DockerEventsListenerImpl extends DockerEventListener {
                 LOGGER.log(Level.WARNING, "Cannot retrieve the fingerprint for containerId={0}", containerInfo.getId());
             }
             // Notify listeners
-            DockerEventListener.fireNewDeployment(containerId);
+            DockerTraceabilityReportListener.fireNewDeployment(containerId);
         }
         
         // Update image facets by a new info if available

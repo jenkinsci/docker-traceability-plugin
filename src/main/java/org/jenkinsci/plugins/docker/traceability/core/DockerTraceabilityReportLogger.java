@@ -26,21 +26,24 @@ package org.jenkinsci.plugins.docker.traceability.core;
 import hudson.Extension;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import org.jenkinsci.plugins.docker.traceability.DockerEventListener;
+import org.jenkinsci.plugins.docker.traceability.model.DockerTraceabilityReportListener;
 import org.jenkinsci.plugins.docker.traceability.model.DockerTraceabilityReport;
+import org.kohsuke.accmod.Restricted;
+import org.kohsuke.accmod.restrictions.NoExternalUse;
 
 /**
  * Logs {@link DockerTraceabilityReport}s to the system log.
  * @author Oleg Nenashev
  */
 @Extension
-public class DockerEventsLogger extends DockerEventListener {
+@Restricted(NoExternalUse.class)
+public class DockerTraceabilityReportLogger extends DockerTraceabilityReportListener {
     
     private static final Level LOG_LEVEL = Level.INFO;
-    private static final Logger LOGGER = Logger.getLogger(DockerEventsLogger.class.getName());
+    private static final Logger LOGGER = Logger.getLogger(DockerTraceabilityReportLogger.class.getName());
 
     @Override
-    public void onEvent(DockerTraceabilityReport event) {
-        LOGGER.log(LOG_LEVEL, event.toString());
+    public void onReport(DockerTraceabilityReport report) {
+        LOGGER.log(LOG_LEVEL, report.toString());
     }
 }

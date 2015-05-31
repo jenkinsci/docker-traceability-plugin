@@ -64,7 +64,7 @@ import static jenkins.model.Jenkins.XSTREAM;
 import org.acegisecurity.AccessDeniedException;
 import org.apache.commons.lang.StringUtils;
 import org.jenkinsci.plugins.docker.commons.fingerprint.DockerFingerprints;
-import org.jenkinsci.plugins.docker.traceability.DockerEventListener;
+import org.jenkinsci.plugins.docker.traceability.model.DockerTraceabilityReportListener;
 import org.jenkinsci.plugins.docker.traceability.DockerTraceabilityPlugin;
 import org.jenkinsci.plugins.docker.traceability.fingerprint.DockerContainerRecord;
 import org.jenkinsci.plugins.docker.traceability.fingerprint.DockerDeploymentFacet;
@@ -290,7 +290,7 @@ public class DockerTraceabilityRootAction implements RootAction, SearchableModel
                     inspectContainerResponse, 
                     inspectContainerResponse.getImageId(), effectiveImageName,
                     new LinkedList<String>(), effectiveEnvironment);
-            DockerEventListener.fire(res);
+            DockerTraceabilityReportListener.fire(res);
         }
     } 
        
@@ -309,7 +309,7 @@ public class DockerTraceabilityRootAction implements RootAction, SearchableModel
         checkPermission(DockerTraceabilityPlugin.SUBMIT);
         ObjectMapper mapper = new ObjectMapper();
         final DockerTraceabilityReport report = mapper.readValue(json, DockerTraceabilityReport.class);
-        DockerEventListener.fire(report);
+        DockerTraceabilityReportListener.fire(report);
     }
     
     /**
