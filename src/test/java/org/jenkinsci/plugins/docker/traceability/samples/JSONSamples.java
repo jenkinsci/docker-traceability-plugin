@@ -35,7 +35,7 @@ import org.apache.commons.io.IOUtils;
 public enum JSONSamples {
     
     inspectContainerData,
-    submitEvent;
+    submitReport;
     
     public String getFileName() {
         return this + ".json";

@@ -138,8 +138,8 @@
     </li>
   </ul>
   
-  <h4>$(JENKINS_URL)/docker-traceability/submitEvent</h4>
-  Submits an event using the extended JSON API. 
+  <h4>$(JENKINS_URL)/docker-traceability/submitReport</h4>
+  Submits a report using the extended JSON API. 
   This endpoint can be used by scripts to submit the full available info about
   the container and its environment in a single command.
   <p/>
@@ -200,6 +200,14 @@
           <br/><b>Data format:</b> String
         </dd>
       </dl>
+    </li>
+  </ul>
+  Call example: 
+  <ul>
+    <li>
+      From test samples:
+      <i>curl http://localhost:8080/jenkins/docker-traceability/submitReport 
+        --data-urlencode json@src/test/resources/org/jenkinsci/plugins/docker/traceability/samples/submitReport.json</i>
     </li>
   </ul>
   

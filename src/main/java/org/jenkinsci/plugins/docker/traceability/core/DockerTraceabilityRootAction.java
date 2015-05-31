@@ -296,15 +296,12 @@ public class DockerTraceabilityRootAction implements RootAction, SearchableModel
        
     /**
      * Submits a new {@link DockerTraceabilityReport} via API.
-     * @param req Incoming request
-     * @param rsp Output response
      * @param json String representation of {@link DockerTraceabilityReport}
      * @throws ServletException Servlet error
      * @throws IOException Processing error
      */
     @RequirePOST
-    public void doSubmitEvent(StaplerRequest req, StaplerResponse rsp, 
-            @QueryParameter(required = true) String json) 
+    public void doSubmitReport(@QueryParameter(required = true) String json) 
             throws IOException, ServletException { 
         checkPermission(DockerTraceabilityPlugin.SUBMIT);
         ObjectMapper mapper = new ObjectMapper();

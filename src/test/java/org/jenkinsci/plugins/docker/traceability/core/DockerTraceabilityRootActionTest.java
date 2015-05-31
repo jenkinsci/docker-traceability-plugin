@@ -113,8 +113,8 @@ public class DockerTraceabilityRootActionTest {
     @Test
     public void submitEvent() throws Exception {
         // Read data from resources
-        String reportString = JSONSamples.submitEvent.readString();
-        DockerTraceabilityReport report = JSONSamples.submitEvent.
+        String reportString = JSONSamples.submitReport.readString();
+        DockerTraceabilityReport report = JSONSamples.submitReport.
                 readObject(DockerTraceabilityReport.class);
         final String containerId = report.getContainer().getId();
         final String imageId = report.getImageId();
@@ -135,7 +135,7 @@ public class DockerTraceabilityRootActionTest {
         createTestBuildRefFacet(imageId, "test");
         
         // Submit JSON
-        action.doSubmitEvent(req, rsp, reportString);
+        action.doSubmitReport(reportString);
         
         // Ensure there's are expected fingerprints
         final DockerDeploymentFacet containerFacet = assertExistsDeploymentFacet(containerId, imageId);
