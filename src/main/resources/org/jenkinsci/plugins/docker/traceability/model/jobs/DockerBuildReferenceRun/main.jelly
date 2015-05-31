@@ -24,6 +24,18 @@
 
 -->
 <?jelly escape-by-default='true'?>
-<j:jelly xmlns:j="jelly:core" xmlns:st="jelly:stapler" xmlns:d="jelly:define" xmlns:l="/lib/layout" xmlns:t="/lib/hudson" xmlns:f="/lib/form" xmlns:i="jelly:fmt">
-  <!-- TODO: reference fingerprints -->
+<j:jelly xmlns:j="jelly:core" xmlns:st="jelly:stapler" xmlns:d="jelly:define" xmlns:l="/lib/layout" 
+         xmlns:t="/lib/hudson" xmlns:f="/lib/form" xmlns:i="jelly:fmt"
+         xmlns:docker="/org/jenkinsci/plugins/docker/traceability/lib">
+  <h2>${%Details}</h2>
+  <ul>
+    <li>${%Type}: ${it.itemType.displayName}</li>
+    <li>${%ID}: ${it.itemId}</li>
+    <li>${%Name}: &quot;${it.itemName}&quot;</li>
+    <li>${%Created}: <docker:eventTime time="${it.dockerTimestamp}"/></li>
+  </ul>
+  <p/>
+  More info: <a href="${rootURL}/docker-traceability/${it.itemType.typeName}?id=${it.itemId}">
+    Fingerprint of ${it.itemType.displayName} ${it.itemId}
+  </a>
 </j:jelly>

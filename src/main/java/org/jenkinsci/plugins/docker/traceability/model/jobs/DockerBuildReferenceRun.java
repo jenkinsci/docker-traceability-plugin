@@ -105,7 +105,18 @@ public class DockerBuildReferenceRun extends AbstractBuild<DockerBuildReferenceJ
         CONTAINER,
         IMAGE;
         
-        public String getDisplayName() {
+        /**
+         * Display name of the {@link Type}.
+         * May become localizable later, defaults to {@link #getTypeName()}.
+         */
+        public @Nonnull String getDisplayName() {
+            return getTypeName();
+        }
+        
+        /**
+         * Short unique id of the {@link Type}.
+         */
+        public @Nonnull String getTypeName() {
             switch(this) {
                 case CONTAINER:
                     return "container";
