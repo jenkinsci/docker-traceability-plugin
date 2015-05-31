@@ -28,9 +28,12 @@ import hudson.model.Api;
 import hudson.security.Permission;
 import hudson.security.PermissionGroup;
 import hudson.security.PermissionScope;
+import java.io.IOException;
+import java.util.logging.Level;
 import java.util.logging.Logger;
 import jenkins.model.Jenkins;
 import org.jenkinsci.plugins.docker.traceability.core.DockerEventsAction;
+import org.jenkinsci.plugins.docker.traceability.model.jobs.DockerBuildReferenceFactory;
 import org.kohsuke.stapler.export.ExportedBean;
 
 /**
@@ -55,10 +58,8 @@ public class DockerTraceabilityPlugin extends Plugin {
      * @see DockerEventsAction#doRemoveContainer(org.kohsuke.stapler.StaplerRequest, org.kohsuke.stapler.StaplerResponse, java.lang.String)
      */
     public static final Permission DELETE = new Permission(PERMISSIONS,"Delete", Messages._DockerDeployment_Permissions_Delete_Permission_Description(), Jenkins.ADMINISTER, PermissionScope.JENKINS);
-       
+     
     public Api getApi() {
         return new Api(this);
-    }
-    
-
+    }   
 }

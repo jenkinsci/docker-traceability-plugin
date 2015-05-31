@@ -75,7 +75,7 @@ public class DockerEventsListenerImpl extends DockerEventListener {
         @CheckForNull Fingerprint containerFP = null;
         if (containerInfo != null) {
             final String containerId = containerInfo.getId();
-            containerFP = DockerTraceabilityHelper.make(containerId);
+            containerFP = DockerTraceabilityHelper.make(containerId, report.getEvent().getTime());
             if (containerFP != null) {
                 DockerDeploymentFacet.addEvent(containerFP, report);
                 DockerDeploymentRefFacet.addRef(imageFP, containerInfo.getId());
