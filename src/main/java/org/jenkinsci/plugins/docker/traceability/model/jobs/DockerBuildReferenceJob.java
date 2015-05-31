@@ -23,6 +23,7 @@
  */
 package org.jenkinsci.plugins.docker.traceability.model.jobs;
 
+import hudson.BulkChange;
 import hudson.Extension;
 import hudson.model.AbstractProject;
 import hudson.model.Descriptor;
@@ -75,23 +76,29 @@ public class DockerBuildReferenceJob extends AbstractProject<DockerBuildReferenc
      * Retrieves a {@link DockerBuildReferenceRun} for the specified ID and type.
      * If there is no existing reference, a new one will be created.
      * The method presumes that IDs are unique across all types
-     * @param dockerId Id of docker item (container, image, etc.)
+     * @param id Id of docker item (container, image, etc.)
+     * @param name Optional name of the docker item
      * @param type Docker item type
      * @param timestamp Time of the request. This time will be assigned to
      *      the newly created {@link DockerBuildReferenceRun}.
      * @return {@link DockerBuildReferenceRun} for the specified id
      * @throws IOException {@link DockerBuildReferenceRun} save error
      */
-    protected synchronized @Nonnull DockerBuildReferenceRun forDockerItem(@Nonnull String dockerId, 
+    protected synchronized @Nonnull DockerBuildReferenceRun forDockerItem(@Nonnull String id,
+            @CheckForNull String name,
             @Nonnull DockerBuildReferenceRun.Type type, long timestamp) throws IOException {
-        final Integer runNumber = byDockerId.get(dockerId);
+        final Integer runNumber = byDockerId.get(id);
         DockerBuildReferenceRun run = runNumber !=null ? getBuildByNumber(runNumber) : null;
         if (run == null) {       
             run = newBuild();
-            run.set(dockerId, type,  timestamp);
-            run.run();
-            byDockerId.put(name, run.getNumber());
-            run.save();
+            BulkChange ch = new BulkChange(run);
+            try {
+                run.set(id, name, type, timestamp);
+                run.run();
+                byDockerId.put(name, run.getNumber());
+            } finally {
+                ch.commit();
+            }
             save();
         }
         return run;
@@ -109,7 +116,7 @@ public class DockerBuildReferenceJob extends AbstractProject<DockerBuildReferenc
     @Override
     public synchronized void removeRun(@Nonnull DockerBuildReferenceRun run) {
         super.removeRun(run);
-        byDockerId.remove(run.getDockerId(), run);
+        byDockerId.remove(run.getItemId(), run);
     }
     
     /**

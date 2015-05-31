@@ -28,6 +28,7 @@ import hudson.model.listeners.ItemListener;
 import java.io.IOException;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import javax.annotation.CheckForNull;
 import javax.annotation.Nonnull;
 import jenkins.model.Jenkins;
 import org.jenkinsci.plugins.docker.traceability.DockerTraceabilityPlugin;
@@ -44,14 +45,14 @@ public class DockerBuildReferenceFactory {
     private static final Object LOCK = new Object();
     private static DockerBuildReferenceJob job;
     
-    public static @Nonnull DockerBuildReferenceRun forContainer(@Nonnull String containerId, long timestamp) 
-            throws IOException {
-        return forDockerItem(containerId, DockerBuildReferenceRun.Type.CONTAINER, timestamp);
+    public static @Nonnull DockerBuildReferenceRun forContainer(@Nonnull String containerId, 
+            @CheckForNull String name, long timestamp) throws IOException {
+        return forDockerItem(containerId, name, DockerBuildReferenceRun.Type.CONTAINER, timestamp);
     }
     
-    public static @Nonnull DockerBuildReferenceRun forImage(@Nonnull String imageId, long timestamp)
-            throws IOException {
-        return forDockerItem(imageId, DockerBuildReferenceRun.Type.IMAGE, timestamp);
+    public static @Nonnull DockerBuildReferenceRun forImage(@Nonnull String imageId, 
+            @CheckForNull String name,  long timestamp) throws IOException {
+        return forDockerItem(imageId, name, DockerBuildReferenceRun.Type.IMAGE, timestamp);
     }
     
     public static void onStart() throws IOException {
@@ -62,14 +63,14 @@ public class DockerBuildReferenceFactory {
     }
     
     private static @Nonnull DockerBuildReferenceRun forDockerItem(@Nonnull String dockerId, 
-            DockerBuildReferenceRun.Type type, long timestamp) throws IOException {
+            @CheckForNull String name, @Nonnull DockerBuildReferenceRun.Type type, long timestamp) throws IOException {
         final Jenkins j = Jenkins.getInstance();
         if (j == null) {
             throw new IllegalStateException("Jenkins instance is not ready");
         }
         
         synchronized (LOCK) {
-            final DockerBuildReferenceRun run = job.forDockerItem(dockerId, type, timestamp);
+            final DockerBuildReferenceRun run = job.forDockerItem(dockerId, name, type, timestamp);
             return run;
         }
     }

@@ -29,6 +29,8 @@ import hudson.model.Result;
 import hudson.model.Run;
 import java.io.File;
 import java.io.IOException;
+import javax.annotation.CheckForNull;
+import javax.annotation.Nonnull;
 import jenkins.model.lazy.LazyBuildMixIn;
 
 /**
@@ -38,9 +40,11 @@ import jenkins.model.lazy.LazyBuildMixIn;
  */
 public class DockerBuildReferenceRun extends AbstractBuild<DockerBuildReferenceJob, DockerBuildReferenceRun> {
     
-    private String dockerId;
-    private Type type;
+    private String itemId;
+    private @CheckForNull String itemName;
+    private Type itemType;
     private long dockerTimestamp;
+    
     
     public DockerBuildReferenceRun(DockerBuildReferenceJob job) throws IOException  {
         super(job);
@@ -50,20 +54,39 @@ public class DockerBuildReferenceRun extends AbstractBuild<DockerBuildReferenceJ
         super(job, buildDir);
     }
     
-    void set(String dockerId, Type type, long timestamp) {
-        this.dockerId = dockerId;
-        this.type = type;
+    /**
+     * Sets data items and generates an appropriate description
+     * @param id
+     * @param name
+     * @param type
+     * @param timestamp
+     * @throws IOException Description update error
+     */
+    void set(@Nonnull String id, @CheckForNull String name, @Nonnull Type type, long timestamp)     
+            throws IOException {
+        this.itemId = id;
+        this.itemName = name;
+        this.itemType = type;
         this.dockerTimestamp = timestamp;
+        setDescription("for "+type.getDisplayName()+" "+ (name != null ? name : id));
     }
 
-    public String getDockerId() {
-        return dockerId;
+    public String getItemId() {
+        return itemId;
     }
 
-    public Type getType() {
-        return type;
+    public Type getItemType() {
+        return itemType;
     }
 
+    /**
+     * Optional name of the docker item
+     * @return Name of the docker item
+     */
+    public @CheckForNull String getItemName() {
+        return itemName;
+    }
+ 
     public long getDockerTimestamp() {
         return dockerTimestamp;
     }
@@ -81,5 +104,16 @@ public class DockerBuildReferenceRun extends AbstractBuild<DockerBuildReferenceJ
     public static enum Type {
         CONTAINER,
         IMAGE;
+        
+        public String getDisplayName() {
+            switch(this) {
+                case CONTAINER:
+                    return "container";
+                case IMAGE:
+                    return "image";
+                default:
+                    throw new IllegalArgumentException("Unsupported Docker item type: "+this);
+            }
+        }
     }
 }

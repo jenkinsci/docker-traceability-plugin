@@ -104,19 +104,21 @@ public class DockerTraceabilityHelper {
     /**
      * Get or create a fingerprint by the specified container ID.
      * @param containerId Full 64-symbol container id. Short forms are not supported.
+     * @param name Optional container name
      * @param timestamp Timestamp if there is a need to create a new container
      * @return Fingerprint. null if Jenkins has not been initialized yet
      * @throws IOException Fingerprint loading error
      */
-    public static @CheckForNull Fingerprint make(@Nonnull String containerId, long timestamp) throws IOException {
+    public static @CheckForNull Fingerprint make(@Nonnull String containerId, 
+            @CheckForNull String name, long timestamp) throws IOException {
         final Jenkins jenkins = Jenkins.getInstance();
         if (jenkins == null) {
             return null;
         }
         
-        final DockerBuildReferenceRun run = DockerBuildReferenceFactory.forContainer(containerId, timestamp);
+        final DockerBuildReferenceRun run = DockerBuildReferenceFactory.forContainer(containerId, name, timestamp);
         final Fingerprint fp = jenkins.getFingerprintMap().getOrCreate(
-                run, CONTAINER_FP_NAME, getContainerHash(containerId));
+                run, "Container "+(name != null ? name : name), getContainerHash(containerId));
         return fp;
     }
     
