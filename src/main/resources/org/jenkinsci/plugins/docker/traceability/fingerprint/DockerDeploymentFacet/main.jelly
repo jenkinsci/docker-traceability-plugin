@@ -67,7 +67,7 @@
   </h2>
   <ul>
     <li>
-      <a href="${rootURL}/docker-traceability/rawContainerInfo?containerId=${it.latest.containerId}">
+      <a href="${rootURL}/docker-traceability/rawContainerInfo?id=${it.latest.containerId}">
         ${%Last record in JSON}
       </a>
     </li>

@@ -374,34 +374,30 @@ public class DockerTraceabilityRootAction implements RootAction, SearchableModel
      * Retrieves the latest container status via API.
      * The output will be retrieved in JSON. Supports filers. Missing 
      * &quot;since&quot; and &quot;until&quot; 
-     * @param req Incoming request
-     * @param rsp Output response
-     * @param containerId ID of the container, for which the info should be retrieved.
+     * @param id ID of the container, for which the info should be retrieved.
      *    Short container IDs are not supported.
      * @throws IOException Processing error
      * @throws ServletException Servlet error
+     * @return Raw JSON output compatible with docker inspect
      */
-    public void doRawContainerInfo(StaplerRequest req, StaplerResponse rsp, 
-            @QueryParameter(required = true) String containerId) 
+    public HttpResponse doRawContainerInfo(@QueryParameter(required = true) String id) 
             throws IOException, ServletException {     
         checkPermission(DockerTraceabilityPlugin.READ_DETAILS);
         
         //TODO: check containerID format
-        final DockerTraceabilityReport report = DockerTraceabilityHelper.getLastReport(containerId);
+        final DockerTraceabilityReport report = DockerTraceabilityHelper.getLastReport(id);
         if (report == null) {
-            rsp.sendError(404, "No info available for the containerId=" + containerId);
-            return;
+            return HttpResponses.error(404, "No info available for the containerId=" + id);
         }
         final InspectContainerResponse inspectInfo = report.getContainer();
         if (inspectInfo == null) {
             assert false : "Input logic should reject such cases";
-            rsp.sendError(500, "Cannot retrieve the container's status");
+            return HttpResponses.error(500, "Cannot retrieve the container's status"); 
         }
         
         // Return raw JSON in the response
-        ObjectMapper mapper = new ObjectMapper();
         InspectContainerResponse[] out = {inspectInfo};
-        mapper.writeValue(rsp.getOutputStream(), out);
+        return toJSONResponse(out);
     }  
     
     //TODO: More filtering
@@ -481,28 +477,24 @@ public class DockerTraceabilityRootAction implements RootAction, SearchableModel
     /**
      * Retrieves the latest raw status via API.
      * The output will be retrieved in JSON.
-     * @param req Incoming request
-     * @param rsp Output response
      * @param id ID of the image, for which the info should be retrieved.
      *    Short container IDs are not supported.
      * @throws IOException Processing error
      * @throws ServletException Servlet error
+     * @return {@link HttpResponse}
      */
-    public void doRawImageInfo(StaplerRequest req, StaplerResponse rsp, 
-            @QueryParameter(required = true) String id) 
+    public HttpResponse doRawImageInfo(@QueryParameter(required = true) String id) 
             throws IOException, ServletException {     
         checkPermission(DockerTraceabilityPlugin.READ_DETAILS);
         
         final InspectImageResponse report = DockerTraceabilityHelper.getLastInspectImageResponse(id);
-        if (report == null) {
-            rsp.sendError(404, "No info available for the imageId=" + id);
-            return;
+        if (report == null) {   
+            return HttpResponses.error(404, "No info available for the imageId=" + id);
         }
         
         // Return raw JSON in the response
-        ObjectMapper mapper = new ObjectMapper();
         InspectImageResponse[] out = {report};
-        mapper.writeValue(rsp.getOutputStream(), out);
+        return toJSONResponse(out);
     } 
     
     /**

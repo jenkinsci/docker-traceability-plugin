@@ -94,7 +94,7 @@ public class DockerTraceabilityRootActionTest {
         // Try to call the actions method to retrieve the data
         final Page res;
         try {
-            res = client.goTo("docker-traceability/rawContainerInfo?containerId="+containerId, null);
+            res = client.goTo("docker-traceability/rawContainerInfo?id="+containerId, null);
         } catch (Exception ex) {
             ex.getMessage();
             throw new AssertionError("Cannot get a response from rawInfo page", ex);

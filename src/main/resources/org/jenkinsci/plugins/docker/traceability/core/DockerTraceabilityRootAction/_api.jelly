@@ -60,7 +60,7 @@
   <p/>
   Query Parameters:
   <ul>
-    <li><b>containerId</b> - ID of the container. Only full 64-symbol IDs are supported</li>
+    <li><b>id</b> - ID of the container. Only full 64-symbol IDs are supported</li>
   </ul>
   
   <h4>$(JENKINS_URL)/docker-traceability/queryContainer</h4>
