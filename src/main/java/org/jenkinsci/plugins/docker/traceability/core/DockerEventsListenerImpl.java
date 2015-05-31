@@ -98,7 +98,7 @@ public class DockerEventsListenerImpl extends DockerEventListener {
 
     @Override
     public void onNewDeployment(String containerId) {
-        final DockerEventsAction action = DockerTraceabilityHelper.getTraceabilityAction();
+        final DockerTraceabilityRootAction action = DockerTraceabilityHelper.getTraceabilityAction();
         if (action == null) {
             return; // Hopefully we'll register the container later
         }

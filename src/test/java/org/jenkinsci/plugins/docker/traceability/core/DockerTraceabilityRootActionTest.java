@@ -53,10 +53,10 @@ import org.kohsuke.stapler.StaplerResponse;
 import org.mockito.Mock;
 
 /**
- * Tests for {@link DockerEventsAction}.
+ * Tests for {@link DockerTraceabilityRootAction}.
  * @author Oleg Nenashev
  */
-public class DockerEventsActionTest {
+public class DockerTraceabilityRootActionTest {
     
     @Rule
     public JenkinsRule j = new JenkinsRule();
@@ -76,7 +76,7 @@ public class DockerEventsActionTest {
         
         // Init system data
         JenkinsRule.WebClient client = j.createWebClient();
-        final DockerEventsAction action = DockerTraceabilityHelper.getTraceabilityAction();
+        final DockerTraceabilityRootAction action = DockerTraceabilityHelper.getTraceabilityAction();
         assertNotNull(action);
              
         // Prepare a run with Fingerprints and referenced facets
@@ -122,10 +122,10 @@ public class DockerEventsActionTest {
         // Init system data
         // TODO: replace by a helper method from the branch
         JenkinsRule.WebClient client = j.createWebClient();
-        @CheckForNull DockerEventsAction action = null;
+        @CheckForNull DockerTraceabilityRootAction action = null;
         for (Action rootAction : j.getInstance().getActions()) {
-            if (rootAction instanceof DockerEventsAction) {
-                action = (DockerEventsAction) rootAction;
+            if (rootAction instanceof DockerTraceabilityRootAction) {
+                action = (DockerTraceabilityRootAction) rootAction;
                 break;
             }
         }    
@@ -162,10 +162,10 @@ public class DockerEventsActionTest {
     public void containerIDs_CRUD() throws Exception {
         // TODO: replace by a helper method from the branch
         JenkinsRule.WebClient client = j.createWebClient();
-        @CheckForNull DockerEventsAction action = null;
+        @CheckForNull DockerTraceabilityRootAction action = null;
         for (Action rootAction : j.getInstance().getActions()) {
-            if (rootAction instanceof DockerEventsAction) {
-                action = (DockerEventsAction) rootAction;
+            if (rootAction instanceof DockerTraceabilityRootAction) {
+                action = (DockerTraceabilityRootAction) rootAction;
                 break;
             }
         }    
@@ -192,7 +192,7 @@ public class DockerEventsActionTest {
         assertEquals(1, action.getContainerIDs().size());
         
         // Reload the data and ensure the status has been persisted correctly
-        action = new DockerEventsAction();
+        action = new DockerTraceabilityRootAction();
         assertEquals(1, action.getContainerIDs().size());
         for (String id : action.getContainerIDs()) {
             assertEquals(id2, id);

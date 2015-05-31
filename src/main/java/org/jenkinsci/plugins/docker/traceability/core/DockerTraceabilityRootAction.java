@@ -91,13 +91,13 @@ import org.kohsuke.stapler.interceptor.RequirePOST;
  */
 @Extension
 @ExportedBean
-public class DockerEventsAction implements RootAction, SearchableModelObject, Saveable {
+public class DockerTraceabilityRootAction implements RootAction, SearchableModelObject, Saveable {
 
     private final static Logger LOGGER = Logger.getLogger(DockerTraceabilityPlugin.class.getName());
     
     private @CheckForNull Set<String> containerIDs;
 
-    public DockerEventsAction() {
+    public DockerTraceabilityRootAction() {
         load();
     }
     
@@ -339,7 +339,7 @@ public class DockerEventsAction implements RootAction, SearchableModelObject, Sa
      * @param req Stapler request
      * @param rsp Stapler response
      * @param id Container ID. Method supports full 64-char IDs only.
-     * @throws IOException Cannot save the updated {@link DockerEventsAction}
+     * @throws IOException Cannot save the updated {@link DockerTraceabilityRootAction}
      * @throws ServletException Servlet exception
      */
     @RequirePOST
@@ -579,7 +579,7 @@ public class DockerEventsAction implements RootAction, SearchableModelObject, Sa
             throw new IOException("Jenkins instance is not ready, cannot retrieve the root directory");
         }
         
-        return new XmlFile(XSTREAM, new File(j.getRootDir(), DockerEventsAction.class.getName()+".xml"));
+        return new XmlFile(XSTREAM, new File(j.getRootDir(), DockerTraceabilityRootAction.class.getName()+".xml"));
     }
     
     @Override

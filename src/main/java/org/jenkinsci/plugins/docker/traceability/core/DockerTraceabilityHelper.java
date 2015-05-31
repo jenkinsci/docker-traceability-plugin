@@ -165,19 +165,19 @@ public class DockerTraceabilityHelper {
     }
     
     /**
-     * Gets the {@link DockerEventsAction} of Jenkins instance.
+     * Gets the {@link DockerTraceabilityRootAction} of Jenkins instance.
      * @return Instance or null if it is not available
      */
-    public static @CheckForNull DockerEventsAction getTraceabilityAction() {
+    public static @CheckForNull DockerTraceabilityRootAction getTraceabilityAction() {
         Jenkins j = Jenkins.getInstance();
         if (j == null) {
             return null;
         }
         
-        @CheckForNull DockerEventsAction action = null;
+        @CheckForNull DockerTraceabilityRootAction action = null;
         for (Action rootAction : j.getActions()) {
-            if (rootAction instanceof DockerEventsAction) {
-                action = (DockerEventsAction) rootAction;
+            if (rootAction instanceof DockerTraceabilityRootAction) {
+                action = (DockerTraceabilityRootAction) rootAction;
                 break;
             }
         } 
