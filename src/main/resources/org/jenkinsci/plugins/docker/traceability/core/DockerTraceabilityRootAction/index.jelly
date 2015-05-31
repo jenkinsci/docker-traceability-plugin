@@ -94,17 +94,17 @@ THE SOFTWARE.
                 </j:when>
                 <j:otherwise>
                   <td>
-                    ${%Name}: ${lastRecord.event.container.name}
+                    ${%Name}: ${lastRecord.report.container.name}
                     <br/>
                     ${%ID/Source}: <docker:container id="${containerId}"/>
                     <br/>
-                    ${%Base image}: <docker:image id="${lastRecord.event.imageId}"/>
+                    ${%Base image}: <docker:image id="${lastRecord.report.imageId}"/>
                     <br/>
-                    ${%Parent images}: <docker:parentImages parents="${lastRecord.event.parents}"/>
+                    ${%Parent images}: <docker:parentImages parents="${lastRecord.report.parents}"/>
                   </td>          
                   <td>
-                    <j:set var="container" value="${lastRecord.event.container}"/>
-                    ${%On}: ${lastRecord.event.hostInfo.name} (${%ID}: ${lastRecord.event.hostInfo.ID})
+                    <j:set var="container" value="${lastRecord.report.container}"/>
+                    ${%On}: ${lastRecord.report.hostInfo.name} (${%ID}: ${lastRecord.report.hostInfo.ID})
                     <br/>
                     ${%Last status}: ${facet.lastStatus}
                     <br/>

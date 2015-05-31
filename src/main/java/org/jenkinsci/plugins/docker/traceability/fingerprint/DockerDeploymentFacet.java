@@ -77,7 +77,7 @@ public class DockerDeploymentFacet extends DockerFingerprintFacet {
     public synchronized @Nonnull String getLastStatus() {
         String lastStatus = null;
         for (DockerContainerRecord record : deploymentRecords) {
-            String recordStatus = record.getEvent().getEvent().getStatus();
+            String recordStatus = record.getReport().getEvent().getStatus();
             DockerEventType status = DockerEventType.fromString(recordStatus);
             if (status != DockerEventType.NONE) { // Yes, we accept Unknown statuses frow new Docker versions
                 lastStatus = recordStatus.toUpperCase(Locale.ENGLISH);

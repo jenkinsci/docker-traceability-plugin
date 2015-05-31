@@ -139,7 +139,7 @@ public class DockerTraceabilityHelper {
      */
     public static @CheckForNull DockerTraceabilityReport getLastReport(@Nonnull String containerId) {
         final DockerContainerRecord record = getLastContainerRecord(containerId);
-        return (record != null) ? record.getEvent() : null;
+        return (record != null) ? record.getReport() : null;
     }
     
     /**

@@ -38,9 +38,9 @@
     <tbody>
       <j:forEach var="deploymentRecord" items="${it.deploymentRecords}">
         <tr>
-          <td><docker:eventTime time="${deploymentRecord.event.event.time}"/></td>
-          <td>${deploymentRecord.event.event.status}</td>
-          <td><docker:containerState state="${deploymentRecord.event.container.state}"/></td>
+          <td><docker:eventTime time="${deploymentRecord.report.event.time}"/></td>
+          <td>${deploymentRecord.report.event.status}</td>
+          <td><docker:containerState state="${deploymentRecord.report.container.state}"/></td>
         </tr>    
       </j:forEach>
     </tbody>

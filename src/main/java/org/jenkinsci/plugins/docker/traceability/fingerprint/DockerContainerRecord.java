@@ -24,51 +24,44 @@
 package org.jenkinsci.plugins.docker.traceability.fingerprint;
 
 import com.github.dockerjava.api.command.InspectContainerResponse;
-import java.io.Serializable;
 import javax.annotation.CheckForNull;
 import javax.annotation.Nonnull;
 import org.jenkinsci.plugins.docker.traceability.core.DockerTraceabilityHelper;
-import org.jenkinsci.plugins.docker.traceability.model.DockerEvent;
 import org.jenkinsci.plugins.docker.traceability.model.DockerTraceabilityReport;
-import org.kohsuke.stapler.export.Exported;
-import org.kohsuke.stapler.export.ExportedBean;
 
 /**
  * Stores an entry for {@link DockerDeploymentFacet}.
  * @author Oleg Nenashev
  */
-@ExportedBean
 public class DockerContainerRecord {
     
     private static final long serialVersionUID = 1L;
 
-    private final @Nonnull DockerTraceabilityReport event;
+    private final @Nonnull DockerTraceabilityReport report;
     
-    public DockerContainerRecord(@Nonnull DockerTraceabilityReport event) {
-        this.event = event;
+    public DockerContainerRecord(@Nonnull DockerTraceabilityReport report) {
+        this.report = report;
     }
     
     /**
-     * Refers a {@link DockerEvent}, from which we got an info regarding the deployment
-     * of the container.
-     * @return A related {@link DockerEvent}
+     * Gets the nested report.
+     * @return A related {@link DockerTraceabilityReport}
      */
-    @Exported
-    public @Nonnull DockerTraceabilityReport getEvent() {
-        return event;
+    public @Nonnull DockerTraceabilityReport getReport() {
+        return report;
     }
     
     public @CheckForNull String getContainerId() {
-        InspectContainerResponse container = event.getContainer();
+        InspectContainerResponse container = report.getContainer();
         return (container != null) ? container.getId() : null;
     }
     
     public @CheckForNull String getContainerFingerprintHash() {
-        InspectContainerResponse container = event.getContainer();
+        InspectContainerResponse container = report.getContainer();
         return (container != null) ? DockerTraceabilityHelper.getContainerHash(container.getId()) : null;
     }
     
     public @Nonnull String getImageFingerprintHash() {
-        return DockerTraceabilityHelper.getImageHash(event.getImageId());
+        return DockerTraceabilityHelper.getImageHash(report.getImageId());
     }
 }

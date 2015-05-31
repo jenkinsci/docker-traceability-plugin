@@ -368,7 +368,7 @@ public class DockerAPIReport {
         if (lastRecord == null) {
             return null;
         }
-        final DockerTraceabilityReport report = lastRecord.getEvent();
+        final DockerTraceabilityReport report = lastRecord.getReport();
         @CheckForNull Fingerprint imageFP = null;
         try {
             imageFP = DockerFingerprints.of(report.getImageId());

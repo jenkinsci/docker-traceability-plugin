@@ -27,7 +27,7 @@
 <j:jelly xmlns:j="jelly:core" xmlns:st="jelly:stapler" xmlns:d="jelly:define" 
          xmlns:l="/lib/layout" xmlns:t="/lib/hudson" xmlns:f="/lib/form"
          xmlns:docker="/org/jenkinsci/plugins/docker/traceability/lib">
-  <j:set var="report" value="${it.latest.event}"/>
+  <j:set var="report" value="${it.latest.report}"/>
   <j:set var="container" value="${report.container}"/>
   <h2>
     ${%Container Info}

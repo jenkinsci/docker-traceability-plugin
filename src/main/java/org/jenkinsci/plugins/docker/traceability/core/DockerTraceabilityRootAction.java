@@ -443,13 +443,13 @@ public class DockerTraceabilityRootAction implements RootAction, SearchableModel
         List<Object> result = new ArrayList<Object>(deploymentRecords.size());
         for (DockerContainerRecord record : deploymentRecords) {
             // time filters
-            final long eventTime = record.getEvent().getEvent().getTime();
+            final long eventTime = record.getReport().getEvent().getTime();
             if (eventTime < minTime || eventTime > maxTime) {
                 continue;
             }
             
             // Report data
-            final DockerTraceabilityReport report = record.getEvent();
+            final DockerTraceabilityReport report = record.getReport();
             switch (queryMode) {
                 case all:
                     result.add(report);
