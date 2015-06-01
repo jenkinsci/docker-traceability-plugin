@@ -88,14 +88,14 @@ public class DockerBuildReferenceJob extends AbstractProject<DockerBuildReferenc
             @CheckForNull String name,
             @Nonnull DockerBuildReferenceRun.Type type, long timestamp) throws IOException {
         final Integer runNumber = byDockerId.get(id);
-        DockerBuildReferenceRun run = runNumber !=null ? getBuildByNumber(runNumber) : null;
+        DockerBuildReferenceRun run = runNumber != null ? getBuildByNumber(runNumber) : null;
         if (run == null) {       
             run = newBuild();
             BulkChange ch = new BulkChange(run);
             try {
                 run.set(id, name, type, timestamp);
                 run.run();
-                byDockerId.put(name, run.getNumber());
+                byDockerId.put(id, run.getNumber());
             } finally {
                 ch.commit();
             }
