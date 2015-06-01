@@ -55,7 +55,7 @@ import org.acegisecurity.AccessDeniedException;
 public class DockerBuildReferenceJob extends AbstractProject<DockerBuildReferenceJob, DockerBuildReferenceRun>
         implements TopLevelItem {
 
-    static final String JOB_NAME = "Docker_Traceability_Manager";
+    public static final String JOB_NAME = "Docker_Traceability_Manager";
     static final String ROOT_DIR = "jobs/"+JOB_NAME;
     
     private final SortedMap<String, Integer> byDockerId = new TreeMap<String, Integer>();
@@ -131,21 +131,23 @@ public class DockerBuildReferenceJob extends AbstractProject<DockerBuildReferenc
         }
         
         final File configFile = new File(j.getRootDir(), ROOT_DIR);
+        final DockerBuildReferenceJob job;
         if (configFile.exists()) {
             final Item item = Items.load(j, configFile);
             if (!(item instanceof DockerBuildReferenceJob)) {
                 throw new IOException("Loaded wrong class: "+item.getClass()+" instead of "+DockerBuildReferenceJob.class);
             }
-            DockerBuildReferenceJob job = (DockerBuildReferenceJob)item;
-            job.onLoad(j, JOB_NAME);
-            return job;
+            job = (DockerBuildReferenceJob)item;
+            
         } else { // create new item
-            DockerBuildReferenceJob job = new DockerBuildReferenceJob(j);
-            j.add(job, job.getName());
-            job.save();         
+            job = new DockerBuildReferenceJob(j);     
             job.onCreatedFromScratch();
-            return job;
-        }     
+        }  
+        j.add(job, job.getName());
+        job.save(); 
+        j.save();
+        job.onLoad(j, JOB_NAME);
+        return job;      
     }
 
     public TopLevelItemDescriptor getDescriptor() {

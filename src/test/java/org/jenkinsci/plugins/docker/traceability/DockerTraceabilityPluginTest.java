@@ -24,6 +24,7 @@
 package org.jenkinsci.plugins.docker.traceability;
 
 import java.io.IOException;
+import org.jenkinsci.plugins.docker.traceability.model.jobs.DockerBuildReferenceJob;
 import static org.junit.Assert.*;
 import org.junit.Rule;
 import org.junit.Test;
@@ -37,6 +38,12 @@ public class DockerTraceabilityPluginTest {
     
     @Rule
     public JenkinsRule j = new JenkinsRule();
+    
+    @Test
+    public void testStartup() throws Exception {
+        // Ensure that DockerBuildReferenceJob is being created on startup
+        assertTrue(j.jenkins.getItem(DockerBuildReferenceJob.JOB_NAME) instanceof DockerBuildReferenceJob);
+    }
     
     @Test
     public void testRoundTrip() throws Exception {

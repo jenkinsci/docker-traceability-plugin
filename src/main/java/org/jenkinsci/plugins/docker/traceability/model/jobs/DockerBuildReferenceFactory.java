@@ -25,6 +25,7 @@ package org.jenkinsci.plugins.docker.traceability.model.jobs;
 
 import hudson.Extension;
 import hudson.model.Run;
+import hudson.model.TopLevelItem;
 import hudson.model.listeners.ItemListener;
 import java.io.IOException;
 import java.util.logging.Level;
@@ -44,7 +45,6 @@ public class DockerBuildReferenceFactory {
     
     private final static Logger LOGGER = Logger.getLogger(DockerTraceabilityPlugin.class.getName());  
     private static final Object LOCK = new Object();
-    private static DockerBuildReferenceJob job;
     
     public static @Nonnull DockerBuildReferenceRun forContainer(@Nonnull String containerId, 
             @CheckForNull String name, long timestamp) throws IOException {
@@ -55,23 +55,22 @@ public class DockerBuildReferenceFactory {
             @CheckForNull String name,  long timestamp) throws IOException {
         return forDockerItem(imageId, name, DockerBuildReferenceRun.Type.IMAGE, timestamp);
     }
-    
-    /**
-     * Initializes the factory after the startup.
-     * @throws IOException {@link DockerBuildReferenceJob} loading error
-     */
-    public static void onStart() throws IOException {      
-        getBuildReferenceJob();
-    }
-    
-    private static @Nonnull DockerBuildReferenceJob getBuildReferenceJob() throws IOException {
-        synchronized (LOCK) {
-            if (job == null) {
-                LOGGER.fine("Loading Docker build references for fingerprints");
-                job = DockerBuildReferenceJob.loadJob();
-            }
+      
+    private static @Nonnull DockerBuildReferenceJob getBuildReferenceJob(@Nonnull Jenkins jenkins) throws IOException {
+        TopLevelItem item = jenkins.getItem(DockerBuildReferenceJob.JOB_NAME);
+        if (item instanceof DockerBuildReferenceJob) {
+            return (DockerBuildReferenceJob)item;
         }
-        return job;
+        
+        if (item != null) {
+            throw new IOException("Job "+DockerBuildReferenceJob.JOB_NAME+" exists, but the type is invalid");
+        }
+        
+        // Create/reload job
+        synchronized (LOCK) {
+            LOGGER.fine("Loading Docker build references for fingerprints");
+            return DockerBuildReferenceJob.loadJob();
+        }
     }
     
     /**
@@ -89,12 +88,9 @@ public class DockerBuildReferenceFactory {
         if (j == null) {
             throw new IllegalStateException("Jenkins instance is not ready");
         }
-        
-        synchronized (LOCK) {
-            DockerBuildReferenceJob refJob = getBuildReferenceJob();
-            final DockerBuildReferenceRun run = refJob.forDockerItem(dockerId, name, type, timestamp);
-            return run;
-        }
+        DockerBuildReferenceJob refJob = getBuildReferenceJob(j);
+        final DockerBuildReferenceRun run = refJob.forDockerItem(dockerId, name, type, timestamp);
+        return run;
     }
     
     //TODO: remove after the fix of JENKINS-28654
@@ -111,8 +107,12 @@ public class DockerBuildReferenceFactory {
 
         @Override
         public void onLoaded() {
+            final Jenkins j = Jenkins.getInstance();
+            if (j == null) {
+                throw new IllegalStateException("Jenkins instance is not ready");
+            }
             try {
-                DockerBuildReferenceFactory.onStart();
+                DockerBuildReferenceFactory.getBuildReferenceJob(j);
             } catch(IOException ex) {
                 LOGGER.log(Level.SEVERE, "Cannot initialize the data for "+DockerBuildReferenceFactory.class, ex);
             }
