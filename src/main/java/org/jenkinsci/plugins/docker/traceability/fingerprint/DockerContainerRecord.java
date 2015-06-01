@@ -34,8 +34,6 @@ import org.jenkinsci.plugins.docker.traceability.model.DockerTraceabilityReport;
  * @author Oleg Nenashev
  */
 public class DockerContainerRecord {
-    
-    private static final long serialVersionUID = 1L;
 
     private final @Nonnull DockerTraceabilityReport report;
     
