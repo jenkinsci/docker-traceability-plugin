@@ -100,7 +100,7 @@ public class DockerTraceabilityPlugin extends Plugin {
     }   
 
     public @Nonnull DockerTraceabilityPluginConfiguration getConfiguration() {
-        return configuration;
+        return configuration != null ? configuration : DockerTraceabilityPluginConfiguration.getDefault();
     }
 
     @Override 
