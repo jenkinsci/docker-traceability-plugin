@@ -102,12 +102,20 @@ public class DockerBuildReferenceRun extends AbstractBuild<DockerBuildReferenceJ
      * Type of the {@link DockerBuildReferenceRun}.
      */
     public static enum Type {
-        CONTAINER,
-        IMAGE;
+        
+        CONTAINER("container"),
+        IMAGE("image");
+        
+        private final String typeName;
+
+        private Type(String typeName) {
+            this.typeName = typeName;
+        }
         
         /**
          * Display name of the {@link Type}.
-         * May become localizable later, defaults to {@link #getTypeName()}.
+         * @return Display name for Web interfaces.
+         *      May become localizable later, defaults to {@link #getTypeName()}.
          */
         public @Nonnull String getDisplayName() {
             return getTypeName();
@@ -115,16 +123,10 @@ public class DockerBuildReferenceRun extends AbstractBuild<DockerBuildReferenceJ
         
         /**
          * Short unique id of the {@link Type}.
+         * @return a non-localizable string, which is being used internally
          */
         public @Nonnull String getTypeName() {
-            switch(this) {
-                case CONTAINER:
-                    return "container";
-                case IMAGE:
-                    return "image";
-                default:
-                    throw new IllegalArgumentException("Unsupported Docker item type: "+this);
-            }
+            return typeName;
         }
     }
 }
