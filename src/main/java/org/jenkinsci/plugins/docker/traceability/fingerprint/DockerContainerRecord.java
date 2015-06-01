@@ -24,6 +24,8 @@
 package org.jenkinsci.plugins.docker.traceability.fingerprint;
 
 import com.github.dockerjava.api.command.InspectContainerResponse;
+import com.github.dockerjava.api.model.Event;
+import java.util.Comparator;
 import javax.annotation.CheckForNull;
 import javax.annotation.Nonnull;
 import org.jenkinsci.plugins.docker.traceability.core.DockerTraceabilityHelper;
@@ -61,5 +63,23 @@ public class DockerContainerRecord {
     
     public @Nonnull String getImageFingerprintHash() {
         return DockerTraceabilityHelper.getImageHash(report.getImageId());
+    }
+    
+    /**
+     * Compares {@link DockerContainerRecord}s by time
+     */
+    public static class TimeComparator implements Comparator<DockerContainerRecord> {
+        public int compare(DockerContainerRecord o1, DockerContainerRecord o2) {
+            
+            final Event event1 = o1.getReport().getEvent();
+            final Event event2 = o2.getReport().getEvent();
+            if (event1.getTime() != event2.getTime()) {
+                return Long.compare(event1.getTime(), event2.getTime());
+            }
+            
+            // We rely on the event type and presume there's no similar events
+            // at the same time
+            return event1.getStatus().compareTo(event2.getStatus());
+        }
     }
 }
