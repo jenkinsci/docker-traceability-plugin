@@ -208,37 +208,6 @@ public class DockerTraceabilityRootAction implements RootAction, SearchableModel
     public String getUrlName() {
         return "docker-traceability";
     }
-    
-    
-
-    //TODO: remove
-    /**
-     * 
-     * @param req Incoming request
-     * @param rsp Response
-     * @param imageId image id
-     * @param jobName job name, to which the facet should be attached
-     * @throws IOException Request processing error
-     * @throws ServletException Servlet error
-     * @deprecated Test only 
-     */
-    @Deprecated
-    public void doTestSubmitBuildRef(StaplerRequest req, StaplerResponse rsp,
-            @QueryParameter(required = true) String imageId,
-            @QueryParameter(required = true) String jobName) throws IOException, ServletException {
-        final Jenkins j = Jenkins.getInstance();
-        if (j == null) {
-            throw new IOException("Jenkins instance is not active");
-        }
-        final AbstractProject item = j.getItem(jobName, j, AbstractProject.class);
-        final Run latest = item != null ? item.getLastBuild() : null;
-        if (latest == null) {
-            throw new IOException("Cannot find a project or run to modify"); 
-        }
-        
-        DockerFingerprints.addFromFacet(null,imageId, latest);
-        rsp.sendRedirect2(j.getRootUrl());
-    }
        
     /**
      * Submits a new event through Jenkins API.

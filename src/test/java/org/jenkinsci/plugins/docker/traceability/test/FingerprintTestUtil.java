@@ -24,10 +24,16 @@
 
 package org.jenkinsci.plugins.docker.traceability.test;
 
+import hudson.model.AbstractProject;
 import hudson.model.Fingerprint;
 import hudson.model.Run;
 import java.io.IOException;
+import javax.servlet.ServletException;
+import jenkins.model.Jenkins;
 import org.jenkinsci.plugins.docker.commons.fingerprint.DockerFingerprints;
+import org.kohsuke.stapler.QueryParameter;
+import org.kohsuke.stapler.StaplerRequest;
+import org.kohsuke.stapler.StaplerResponse;
 
 /**
  * Helper methods for unit tests.
@@ -43,5 +49,34 @@ public class FingerprintTestUtil {
      */
     public static void injectFromFacet (Run run, String imageId) throws IOException {
         DockerFingerprints.addFromFacet(null, imageId, run);
+    }
+    
+    /**
+     * A stub method, which emulates the submission of the image reference 
+     * from the web interface
+     * @param req Incoming request
+     * @param rsp Response
+     * @param imageId image id
+     * @param jobName job name, to which the facet should be attached
+     * @throws IOException Request processing error
+     * @throws ServletException Servlet error
+     */
+    public static void doTestSubmitBuildRef(StaplerRequest req, StaplerResponse rsp,
+            @QueryParameter(required = true) String imageId,
+            @QueryParameter(required = true) String jobName) throws IOException, ServletException {
+        final Jenkins j = Jenkins.getInstance();
+        if (j == null) {
+            throw new IOException("Jenkins instance is not active");
+        }
+        j.checkPermission(Jenkins.ADMINISTER);
+        
+        final AbstractProject item = j.getItem(jobName, j, AbstractProject.class);
+        final Run latest = item != null ? item.getLastBuild() : null;
+        if (latest == null) {
+            throw new IOException("Cannot find a project or run to modify"); 
+        }
+        
+        DockerFingerprints.addFromFacet(null,imageId, latest);
+        rsp.sendRedirect2(j.getRootUrl());
     }
 }
