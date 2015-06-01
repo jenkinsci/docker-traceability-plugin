@@ -31,6 +31,7 @@ import java.util.TreeSet;
 import javax.annotation.CheckForNull;
 import javax.annotation.Nonnull;
 import jenkins.model.FingerprintFacet;
+import org.jenkinsci.plugins.docker.commons.fingerprint.DockerFingerprintFacet;
 import org.jenkinsci.plugins.docker.traceability.core.DockerTraceabilityHelper;
 import org.jenkinsci.plugins.docker.traceability.model.DockerEventType;
 import org.kohsuke.accmod.Restricted;
@@ -41,7 +42,7 @@ import org.kohsuke.accmod.restrictions.NoExternalUse;
  * This facet should be added to image {@link Fingerprint}s.
  * @author Oleg Nenashev
  */
-public class DockerDeploymentRefFacet extends FingerprintFacet {
+public class DockerDeploymentRefFacet extends DockerFingerprintFacet {
        
     private final @Nonnull Set<String> containerIds = new TreeSet<String>();
 

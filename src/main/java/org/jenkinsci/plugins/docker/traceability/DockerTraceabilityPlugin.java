@@ -30,12 +30,14 @@ import hudson.security.Permission;
 import hudson.security.PermissionGroup;
 import hudson.security.PermissionScope;
 import java.io.IOException;
+import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.annotation.Nonnull;
 import javax.servlet.ServletException;
 import jenkins.model.Jenkins;
 import net.sf.json.JSONObject;
 import org.kohsuke.stapler.StaplerRequest;
+import org.jenkinsci.plugins.docker.traceability.model.jobs.DockerBuildReferenceFactory;
 import org.kohsuke.stapler.export.ExportedBean;
 
 /**
@@ -95,12 +97,12 @@ public class DockerTraceabilityPlugin extends Plugin {
      
     public Api getApi() {
         return new Api(this);
-    }
+    }   
 
     public @Nonnull DockerTraceabilityPluginConfiguration getConfiguration() {
         return configuration;
     }
-    
+
     @Override 
     public void start() throws Exception {
         load();

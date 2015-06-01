@@ -75,7 +75,8 @@ public class DockerTraceabilityReportListenerImpl extends DockerTraceabilityRepo
         @CheckForNull Fingerprint containerFP = null;
         if (containerInfo != null) {
             final String containerId = containerInfo.getId();
-            containerFP = DockerTraceabilityHelper.make(containerId);
+            final String containerName = hudson.Util.fixEmptyAndTrim(containerInfo.getName());
+            containerFP = DockerTraceabilityHelper.make(containerId, containerName, report.getEvent().getTime());
             if (containerFP != null) {
                 DockerDeploymentFacet.addEvent(containerFP, report);
                 DockerDeploymentRefFacet.addRef(imageFP, containerInfo.getId());
