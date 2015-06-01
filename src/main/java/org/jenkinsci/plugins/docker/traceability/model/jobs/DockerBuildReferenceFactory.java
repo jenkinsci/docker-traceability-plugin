@@ -24,6 +24,7 @@
 package org.jenkinsci.plugins.docker.traceability.model.jobs;
 
 import hudson.Extension;
+import hudson.model.Run;
 import hudson.model.listeners.ItemListener;
 import java.io.IOException;
 import java.util.logging.Level;
@@ -55,13 +56,33 @@ public class DockerBuildReferenceFactory {
         return forDockerItem(imageId, name, DockerBuildReferenceRun.Type.IMAGE, timestamp);
     }
     
-    public static void onStart() throws IOException {
-        LOGGER.fine("Loading Docker build references");
-        synchronized (LOCK) {
-            job = DockerBuildReferenceJob.loadJob();
-        }
+    /**
+     * Initializes the factory after the startup.
+     * @throws IOException {@link DockerBuildReferenceJob} loading error
+     */
+    public static void onStart() throws IOException {      
+        getBuildReferenceJob();
     }
     
+    private static @Nonnull DockerBuildReferenceJob getBuildReferenceJob() throws IOException {
+        synchronized (LOCK) {
+            if (job == null) {
+                LOGGER.fine("Loading Docker build references for fingerprints");
+                job = DockerBuildReferenceJob.loadJob();
+            }
+        }
+        return job;
+    }
+    
+    /**
+     * Generates a reference {@link Run} for the Docker item (image, container, etc.).
+     * @param dockerId ID of Docker container or image
+     * @param name Optional name
+     * @param type Type of the Docker item
+     * @param timestamp Time, when the image has been created
+     * @return A run for the Docker item.
+     * @throws IOException File IO error
+     */
     private static @Nonnull DockerBuildReferenceRun forDockerItem(@Nonnull String dockerId, 
             @CheckForNull String name, @Nonnull DockerBuildReferenceRun.Type type, long timestamp) throws IOException {
         final Jenkins j = Jenkins.getInstance();
@@ -70,7 +91,8 @@ public class DockerBuildReferenceFactory {
         }
         
         synchronized (LOCK) {
-            final DockerBuildReferenceRun run = job.forDockerItem(dockerId, name, type, timestamp);
+            DockerBuildReferenceJob refJob = getBuildReferenceJob();
+            final DockerBuildReferenceRun run = refJob.forDockerItem(dockerId, name, type, timestamp);
             return run;
         }
     }

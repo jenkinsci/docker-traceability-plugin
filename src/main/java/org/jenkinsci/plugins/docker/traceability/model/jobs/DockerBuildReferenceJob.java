@@ -120,11 +120,11 @@ public class DockerBuildReferenceJob extends AbstractProject<DockerBuildReferenc
     }
     
     /**
-     * Loads the job from the disk.
-     * @return Null if the job does not exist.
+     * Loads the job from the disk or creates a new one on-demand.
+     * @return Docker Traceability Manager job.
      * @throws IOException Loading error
      */
-    static @CheckForNull DockerBuildReferenceJob loadJob() throws IOException {
+    static @Nonnull DockerBuildReferenceJob loadJob() throws IOException {
         final Jenkins j = Jenkins.getInstance();
         if (j == null) {
             throw new IOException("Jenkins instance is not ready");
