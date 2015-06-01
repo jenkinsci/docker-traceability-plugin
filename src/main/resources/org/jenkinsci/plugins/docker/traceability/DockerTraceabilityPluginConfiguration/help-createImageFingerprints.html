@@ -1,0 +1,14 @@
+<div>
+  By default, the plugin registers traceability reports for images, which have
+  fingerprints registered by Jenkins plugins using the functionality from 
+  <a href="https://wiki.jenkins-ci.org/display/JENKINS/Docker+Commons+Plugin">
+    Docker Commons Plugin</a>. 
+    This behavior may may be an obstacle if a you want to trace fingerprints
+  for images created outside Jenkins or by plugins, which have no integration with
+  <a href="https://wiki.jenkins-ci.org/display/JENKINS/Docker+Commons+Plugin">
+    Docker Commons</a>.
+  <p/>
+  If enabled, Docker Traceability plugin will create image fingerprints for <b>all</b>
+  submitted reports, hence the plugin starts tracking containers being
+  created for images without parent image fingerprints.
+</div>
