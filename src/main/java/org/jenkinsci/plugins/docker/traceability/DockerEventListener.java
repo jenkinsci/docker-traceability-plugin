@@ -25,7 +25,8 @@ package org.jenkinsci.plugins.docker.traceability;
 
 import hudson.ExtensionList;
 import hudson.ExtensionPoint;
-import hudson.model.Fingerprint;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import javax.annotation.Nonnull;
 import jenkins.model.Jenkins;
 import org.jenkinsci.plugins.docker.traceability.fingerprint.DockerDeploymentFacet;
@@ -38,6 +39,8 @@ import org.jenkinsci.plugins.docker.traceability.model.DockerTraceabilityReport;
  * @since 1.0
  */
 public class DockerEventListener implements ExtensionPoint {
+    
+    private final static Logger LOGGER = Logger.getLogger(DockerTraceabilityPlugin.class.getName());
     
     /**
      * Notifies external listener that an event in Docker happened.
@@ -66,7 +69,7 @@ public class DockerEventListener implements ExtensionPoint {
             try {
                 listener.onEvent(event);
             } catch (Throwable t) { // Prevent failures on runtime exceptions
-                //TODO: logging
+                LOGGER.log(Level.SEVERE, "Runtime exception during the event processing in "+ listener, t);
             }
         }
     }
@@ -80,7 +83,7 @@ public class DockerEventListener implements ExtensionPoint {
             try {
                 listener.onNewDeployment(containerId);
             } catch (Throwable t) { // Prevent failures on runtime exceptions
-                //TODO: logging
+                LOGGER.log(Level.SEVERE, "Runtime exception during the new deployment processing in "+ listener, t);
             }
         }
     }
@@ -90,7 +93,10 @@ public class DockerEventListener implements ExtensionPoint {
      * @return A list of all {@link DockerEventListener} extensions.
      */
     public static @Nonnull ExtensionList<DockerEventListener> all() {
-        // TODO: null checks
-        return Jenkins.getInstance().getExtensionList(DockerEventListener.class);
+        final Jenkins j = Jenkins.getInstance();
+        if (j == null) {
+            return ExtensionList.create((Jenkins) null, DockerEventListener.class);
+        }
+        return j.getExtensionList(DockerEventListener.class);
     }
 }

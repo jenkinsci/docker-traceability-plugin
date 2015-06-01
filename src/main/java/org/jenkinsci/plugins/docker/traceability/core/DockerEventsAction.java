@@ -46,7 +46,7 @@ import hudson.security.Permission;
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.Collection;
+import java.util.Collections;
 import java.util.Date;
 import java.util.HashSet;
 import java.util.LinkedList;
@@ -67,7 +67,6 @@ import org.jenkinsci.plugins.docker.commons.fingerprint.DockerFingerprints;
 import org.jenkinsci.plugins.docker.traceability.DockerEventListener;
 import org.jenkinsci.plugins.docker.traceability.DockerTraceabilityPlugin;
 import org.jenkinsci.plugins.docker.traceability.fingerprint.DockerContainerRecord;
-import org.jenkinsci.plugins.docker.traceability.model.DockerRecordsRegistry;
 import org.jenkinsci.plugins.docker.traceability.fingerprint.DockerDeploymentFacet;
 import org.jenkinsci.plugins.docker.traceability.model.DockerAPIReport;
 import org.jenkinsci.plugins.docker.traceability.model.DockerEvent;
@@ -111,11 +110,15 @@ public class DockerEventsAction implements RootAction, SearchableModelObject, Sa
      * @return Docker container IDs.
      */
     public synchronized @Nonnull Set<String> getContainerIDs() {
-        return (containerIDs == null) ? new HashSet<String>() : new TreeSet<String>(containerIDs);
+        return (containerIDs == null) ?  Collections.<String>emptySet() : new TreeSet<String>(containerIDs);
     }
     
     @Exported
     public synchronized @Nonnull List<DockerAPIReport> records() {
+        if (containerIDs == null) {
+            return Collections.emptyList();
+        }
+        
         final List<DockerAPIReport> res = new ArrayList<DockerAPIReport>(containerIDs.size());
         for (String containerId : containerIDs) {
             DockerAPIReport apiReport = DockerAPIReport.forContainer(containerId);
@@ -155,22 +158,11 @@ public class DockerEventsAction implements RootAction, SearchableModelObject, Sa
             save();
         }
     }
-   
-    public Set<String> getImageIDs() {
-        //TODO: add filters
-        return FingerprintsHelper.getImagesWithFingerprints();
-    }
 
     @Restricted(NoExternalUse.class)
     public @CheckForNull Fingerprint getFingerprint(@Nonnull String containerId) {
         return DockerTraceabilityHelper.of(containerId);
     }
-    
-    public @Nonnull String getDeploymentStats(@Nonnull Fingerprint fp, @Nonnull String containerId) {
-        DockerDeploymentFacet facet = FingerprintsHelper.getFacet(fp, DockerDeploymentFacet.class);
-        //TODO: more info
-        return facet != null ? "Yes, " + facet.getDeploymentRecords().size() + " record(s)" : "No";
-    } 
     
     public @CheckForNull DockerDeploymentFacet getDeploymentFacet(@Nonnull String containerId) {
         Fingerprint fp = DockerTraceabilityHelper.of(containerId);
@@ -187,6 +179,10 @@ public class DockerEventsAction implements RootAction, SearchableModelObject, Sa
      * @return List of container records for all entries.
      */
     public synchronized @Nonnull List<DockerContainerRecord> getContainerRecords() {
+        if (containerIDs == null) {
+            return Collections.emptyList();
+        }
+        
         final List<DockerContainerRecord> res = new ArrayList<DockerContainerRecord>(containerIDs.size());
         for (String containerId : containerIDs) {
             DockerContainerRecord rec = DockerTraceabilityHelper.getLastContainerRecord(containerId);
@@ -212,34 +208,7 @@ public class DockerEventsAction implements RootAction, SearchableModelObject, Sa
         return "docker-traceability";
     }
     
-    /**
-     * Retrieves all registered {@link DockerDeploymentFacet}s.
-     * @return Created record entities
-     */
-    public List<DockerRecordsRegistry> getAllEvents() {
-        if (!hasPermission(DockerTraceabilityPlugin.READ_DETAILS)) {
-            return new LinkedList<DockerRecordsRegistry>();
-        }
-        
-        List<DockerRecordsRegistry> result = new LinkedList<DockerRecordsRegistry>();
-        Set<String> imageIDs = FingerprintsHelper.getImagesWithFingerprints();
-        for (String imageId : imageIDs) {
-            final Fingerprint fp;
-            try {
-                fp = DockerFingerprints.of(imageId);
-            } catch(IOException ex) {
-                // TODO: just ignore for now
-                continue;
-            }
-            DockerDeploymentFacet facet = FingerprintsHelper.getFacet(fp, DockerDeploymentFacet.class);
-            if (facet != null) { // The image has not been deployed yet
-                result.add(new DockerRecordsRegistry(facet.getDeploymentRecords()));
-            }
-        }
-        return result;
-    }
     
-    //TODO: API to export events with by-image, by-container and by-host filtering
 
     //TODO: remove
     /**
@@ -256,10 +225,18 @@ public class DockerEventsAction implements RootAction, SearchableModelObject, Sa
     public void doTestSubmitBuildRef(StaplerRequest req, StaplerResponse rsp,
             @QueryParameter(required = true) String imageId,
             @QueryParameter(required = true) String jobName) throws IOException, ServletException {
-        Run latest = Jenkins.getInstance().getItem(jobName, Jenkins.getInstance(), 
-                AbstractProject.class).getLastBuild();
+        final Jenkins j = Jenkins.getInstance();
+        if (j == null) {
+            throw new IOException("Jenkins instance is not active");
+        }
+        final AbstractProject item = j.getItem(jobName, j, AbstractProject.class);
+        final Run latest = item != null ? item.getLastBuild() : null;
+        if (latest == null) {
+            throw new IOException("Cannot find a project or run to modify"); 
+        }
+        
         DockerFingerprints.addFromFacet(null,imageId, latest);
-        rsp.sendRedirect2(Jenkins.getInstance().getRootUrl());
+        rsp.sendRedirect2(j.getRootUrl());
     }
        
     /**
@@ -430,6 +407,7 @@ public class DockerEventsAction implements RootAction, SearchableModelObject, Sa
         mapper.writeValue(rsp.getOutputStream(), out);
     }  
     
+    //TODO: More filtering
     /**
      * Queries container statuses via API.
      * The output will be retrieved in JSON. Supports filters.
@@ -595,9 +573,13 @@ public class DockerEventsAction implements RootAction, SearchableModelObject, Sa
         return searchIndexBuilder;
     }
 
-    protected final XmlFile getConfigFile() {
-        return new XmlFile(XSTREAM, new File(Jenkins.getInstance().getRootDir(), 
-                DockerEventsAction.class.getName()+".xml"));
+    private @Nonnull XmlFile getConfigFile() throws IOException {
+        final Jenkins j = Jenkins.getInstance();
+        if (j==null) {
+            throw new IOException("Jenkins instance is not ready, cannot retrieve the root directory");
+        }
+        
+        return new XmlFile(XSTREAM, new File(j.getRootDir(), DockerEventsAction.class.getName()+".xml"));
     }
     
     @Override
@@ -615,12 +597,13 @@ public class DockerEventsAction implements RootAction, SearchableModelObject, Sa
             containerIDs.clear();
         }
 
-        XmlFile config = getConfigFile();
+        XmlFile config = null; 
         try {
+            config = getConfigFile();
             if(config.exists())
                 config.unmarshal(this);
         } catch (IOException e) {
-            LOGGER.log(Level.SEVERE, "Failed to load "+config,e);
+            LOGGER.log(Level.SEVERE, "Failed to load the configuration from config path = "+config,e);
         }
     }
     
