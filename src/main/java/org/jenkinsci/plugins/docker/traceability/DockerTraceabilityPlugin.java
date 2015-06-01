@@ -25,12 +25,17 @@ package org.jenkinsci.plugins.docker.traceability;
 
 import hudson.Plugin;
 import hudson.model.Api;
+import hudson.model.Descriptor;
 import hudson.security.Permission;
 import hudson.security.PermissionGroup;
 import hudson.security.PermissionScope;
+import java.io.IOException;
 import java.util.logging.Logger;
+import javax.annotation.Nonnull;
+import javax.servlet.ServletException;
 import jenkins.model.Jenkins;
-import org.jenkinsci.plugins.docker.traceability.core.DockerTraceabilityRootAction;
+import net.sf.json.JSONObject;
+import org.kohsuke.stapler.StaplerRequest;
 import org.kohsuke.stapler.export.ExportedBean;
 
 /**
@@ -55,10 +60,49 @@ public class DockerTraceabilityPlugin extends Plugin {
      * @see DockerEventsAction#doRemoveContainer(org.kohsuke.stapler.StaplerRequest, org.kohsuke.stapler.StaplerResponse, java.lang.String)
      */
     public static final Permission DELETE = new Permission(PERMISSIONS,"Delete", Messages._DockerDeployment_Permissions_Delete_Permission_Description(), Jenkins.ADMINISTER, PermissionScope.JENKINS);
-       
+     
+    private DockerTraceabilityPluginConfiguration configuration;
+
+    /**
+     * Retrieves the plugin instance.
+     * @return {@link DockerTraceabilityPlugin}
+     * @throws IllegalStateException the plugin has not been loaded yet
+     */
+    public static @Nonnull DockerTraceabilityPlugin getInstance() {
+        Jenkins j = Jenkins.getInstance();
+        DockerTraceabilityPlugin plugin = j != null ? j.getPlugin(DockerTraceabilityPlugin.class) : null;
+        if (plugin == null) { // Fail horribly
+            // TODO: throw a graceful error
+            throw new IllegalStateException("Cannot get the plugin's instance. Jenkins or the plugin have not been initialized yet");
+        }
+        return plugin;
+    }
+    
+    @Override
+    protected void load() throws IOException {
+        super.load();
+        if (configuration == null) {     
+            configuration = DockerTraceabilityPluginConfiguration.getDefault();        
+            save();
+        }
+    }
+
+    @Override
+    public void configure(StaplerRequest req, JSONObject formData) throws IOException, ServletException, Descriptor.FormException {
+        configuration = req.bindJSON(DockerTraceabilityPluginConfiguration.class, formData); 
+        save();
+    }
+     
     public Api getApi() {
         return new Api(this);
     }
-    
 
+    public @Nonnull DockerTraceabilityPluginConfiguration getConfiguration() {
+        return configuration;
+    }
+    
+    @Override 
+    public void start() throws Exception {
+        load();
+    }
 }
