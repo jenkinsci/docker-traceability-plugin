@@ -56,15 +56,15 @@
             </j:when>
             <j:otherwise>
               <td>
-                ${%Name}: ${lastRecord.event.container.name}
+                ${%Name}: ${lastRecord.report.container.name}
                 <br/>
                 ${%ID}: <docker:containerId id="${containerId}"/>
                 <br/>
                 ${%Origin}: <docker:containerOriginal id="${containerId}"/>  
               </td>          
               <td>
-                <j:set var="container" value="${lastRecord.event.container}"/>
-                ${%On}: ${lastRecord.event.hostInfo.name} (${%ID}: ${lastRecord.event.hostInfo.ID})
+                <j:set var="container" value="${lastRecord.report.container}"/>
+                ${%On}: ${lastRecord.report.hostInfo.name} (${%ID}: ${lastRecord.report.hostInfo.ID})
                 <br/>
                 ${%Last status}: ${it.getLastStatus(containerId)}
                 <br/>

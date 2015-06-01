@@ -34,7 +34,6 @@ import hudson.model.FreeStyleProject;
 import java.io.IOException;
 import javax.annotation.CheckForNull;
 import javax.annotation.Nonnull;
-import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang.StringUtils;
 import org.jenkinsci.plugins.docker.commons.fingerprint.DockerFingerprints;
 import org.jenkinsci.plugins.docker.traceability.fingerprint.DockerContainerRecord;
@@ -54,10 +53,10 @@ import org.kohsuke.stapler.StaplerResponse;
 import org.mockito.Mock;
 
 /**
- * Tests for {@link DockerEventsAction}.
+ * Tests for {@link DockerTraceabilityRootAction}.
  * @author Oleg Nenashev
  */
-public class DockerEventsActionTest {
+public class DockerTraceabilityRootActionTest {
     
     @Rule
     public JenkinsRule j = new JenkinsRule();
@@ -77,14 +76,14 @@ public class DockerEventsActionTest {
         
         // Init system data
         JenkinsRule.WebClient client = j.createWebClient();
-        final DockerEventsAction action = DockerTraceabilityHelper.getTraceabilityAction();
+        final DockerTraceabilityRootAction action = DockerTraceabilityRootAction.getInstance();
         assertNotNull(action);
              
         // Prepare a run with Fingerprints and referenced facets
         createTestBuildRefFacet(imageId, "test");
         
         // Submit JSON
-        action.doSubmitContainerStatus(req, rsp, inspectData, null, null, null, 0, null, null);
+        action.doSubmitContainerStatus(inspectData, null, null, null, 0, null, null);
         
         // Ensure there's a fingerprint for container, which refers the image
         final DockerDeploymentFacet containerFacet = assertExistsDeploymentFacet(containerId, imageId);
@@ -95,7 +94,7 @@ public class DockerEventsActionTest {
         // Try to call the actions method to retrieve the data
         final Page res;
         try {
-            res = client.goTo("docker-traceability/rawContainerInfo?containerId="+containerId, null);
+            res = client.goTo("docker-traceability/rawContainerInfo?id="+containerId, null);
         } catch (Exception ex) {
             ex.getMessage();
             throw new AssertionError("Cannot get a response from rawInfo page", ex);
@@ -114,8 +113,8 @@ public class DockerEventsActionTest {
     @Test
     public void submitEvent() throws Exception {
         // Read data from resources
-        String reportString = JSONSamples.submitEvent.readString();
-        DockerTraceabilityReport report = JSONSamples.submitEvent.
+        String reportString = JSONSamples.submitReport.readString();
+        DockerTraceabilityReport report = JSONSamples.submitReport.
                 readObject(DockerTraceabilityReport.class);
         final String containerId = report.getContainer().getId();
         final String imageId = report.getImageId();
@@ -123,10 +122,10 @@ public class DockerEventsActionTest {
         // Init system data
         // TODO: replace by a helper method from the branch
         JenkinsRule.WebClient client = j.createWebClient();
-        @CheckForNull DockerEventsAction action = null;
+        @CheckForNull DockerTraceabilityRootAction action = null;
         for (Action rootAction : j.getInstance().getActions()) {
-            if (rootAction instanceof DockerEventsAction) {
-                action = (DockerEventsAction) rootAction;
+            if (rootAction instanceof DockerTraceabilityRootAction) {
+                action = (DockerTraceabilityRootAction) rootAction;
                 break;
             }
         }    
@@ -136,7 +135,7 @@ public class DockerEventsActionTest {
         createTestBuildRefFacet(imageId, "test");
         
         // Submit JSON
-        action.doSubmitEvent(req, rsp, reportString);
+        action.doSubmitReport(reportString);
         
         // Ensure there's are expected fingerprints
         final DockerDeploymentFacet containerFacet = assertExistsDeploymentFacet(containerId, imageId);
@@ -163,10 +162,10 @@ public class DockerEventsActionTest {
     public void containerIDs_CRUD() throws Exception {
         // TODO: replace by a helper method from the branch
         JenkinsRule.WebClient client = j.createWebClient();
-        @CheckForNull DockerEventsAction action = null;
+        @CheckForNull DockerTraceabilityRootAction action = null;
         for (Action rootAction : j.getInstance().getActions()) {
-            if (rootAction instanceof DockerEventsAction) {
-                action = (DockerEventsAction) rootAction;
+            if (rootAction instanceof DockerTraceabilityRootAction) {
+                action = (DockerTraceabilityRootAction) rootAction;
                 break;
             }
         }    
@@ -185,15 +184,15 @@ public class DockerEventsActionTest {
         assertEquals(2, action.getContainerIDs().size());
         
         // Remove data using API. First entry is non-existent
-        action.doRemoveContainer(req, rsp, id3);
+        action.doDeleteContainer(id3);
         assertEquals(2, action.getContainerIDs().size());
-        action.doRemoveContainer(req, rsp, id1);
+        action.doDeleteContainer(id1);
         assertEquals(1, action.getContainerIDs().size());
-        action.doRemoveContainer(req, rsp, id1);
+        action.doDeleteContainer(id1);
         assertEquals(1, action.getContainerIDs().size());
         
         // Reload the data and ensure the status has been persisted correctly
-        action = new DockerEventsAction();
+        action = new DockerTraceabilityRootAction();
         assertEquals(1, action.getContainerIDs().size());
         for (String id : action.getContainerIDs()) {
             assertEquals(id2, id);

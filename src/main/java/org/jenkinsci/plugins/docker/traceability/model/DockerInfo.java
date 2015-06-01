@@ -31,6 +31,7 @@ import javax.annotation.Nonnull;
 
 /**
  * Internal model stub for {@link Info} from docker-java.
+ * The class can be used as a partial wrapper of {@link Info} class.
  * @author Oleg Nenashev
  */
 public class DockerInfo {

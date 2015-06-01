@@ -30,7 +30,7 @@ import hudson.security.PermissionGroup;
 import hudson.security.PermissionScope;
 import java.util.logging.Logger;
 import jenkins.model.Jenkins;
-import org.jenkinsci.plugins.docker.traceability.core.DockerEventsAction;
+import org.jenkinsci.plugins.docker.traceability.core.DockerTraceabilityRootAction;
 import org.kohsuke.stapler.export.ExportedBean;
 
 /**

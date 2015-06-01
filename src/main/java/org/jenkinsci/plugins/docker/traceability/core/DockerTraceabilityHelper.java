@@ -139,7 +139,7 @@ public class DockerTraceabilityHelper {
      */
     public static @CheckForNull DockerTraceabilityReport getLastReport(@Nonnull String containerId) {
         final DockerContainerRecord record = getLastContainerRecord(containerId);
-        return (record != null) ? record.getEvent() : null;
+        return (record != null) ? record.getReport() : null;
     }
     
     /**
@@ -164,25 +164,7 @@ public class DockerTraceabilityHelper {
         }
     }
     
-    /**
-     * Gets the {@link DockerEventsAction} of Jenkins instance.
-     * @return Instance or null if it is not available
-     */
-    public static @CheckForNull DockerEventsAction getTraceabilityAction() {
-        Jenkins j = Jenkins.getInstance();
-        if (j == null) {
-            return null;
-        }
-        
-        @CheckForNull DockerEventsAction action = null;
-        for (Action rootAction : j.getActions()) {
-            if (rootAction instanceof DockerEventsAction) {
-                action = (DockerEventsAction) rootAction;
-                break;
-            }
-        } 
-        return action;
-    }
+    
     
     /**
      * Formats the time to the Docker-standard format.

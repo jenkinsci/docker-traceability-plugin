@@ -35,6 +35,7 @@ import javax.annotation.Nonnull;
 
 /**
  * Describes events happening in Docker.
+ * The class can be used as a wrapper of {@link Event} class.
  * @author Oleg Nenashev
  */
 @JsonIgnoreProperties(ignoreUnknown = true)

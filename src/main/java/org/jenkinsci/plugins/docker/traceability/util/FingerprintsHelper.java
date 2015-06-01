@@ -60,23 +60,4 @@ public class FingerprintsHelper {
         fingerprint.save();
     }
     
-    /**
-     * Get all imageIDs, which have fingerprints somewhere. 
-     * @return Collection of image IDs, which have declared fingerprints.
-     */
-    public static Set<String> getImagesWithFingerprints() {
-        Set<String> result = new HashSet<String>();
-
-        //TODO: Just4test, horrible performance, we need caching
-        for (AbstractProject item : Jenkins.getInstance().getAllItems(AbstractProject.class)) {
-            RunList<Run> runs = item.getBuilds();
-            for (Run run : runs) {
-                DockerFingerprintAction action = run.getAction(DockerFingerprintAction.class);
-                if (action != null) {
-                    result.addAll(action.getImageIDs());
-                }
-            }
-        }
-        return result;
-    }
 }

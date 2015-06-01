@@ -26,7 +26,6 @@ package org.jenkinsci.plugins.docker.traceability.model;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import java.io.IOException;
-import java.io.InputStream;
 import org.jenkinsci.plugins.docker.traceability.samples.JSONSamples;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
@@ -41,7 +40,7 @@ public class DockerTraceabilityReportTest {
     @Test
     public void jsonRoundTrip() throws IOException {
         ObjectMapper mapper = new ObjectMapper();
-        DockerTraceabilityReport report = JSONSamples.submitEvent.readObject(DockerTraceabilityReport.class);
+        DockerTraceabilityReport report = JSONSamples.submitReport.readObject(DockerTraceabilityReport.class);
         assertNotNull(report.getContainer());
         assertNotNull(report.getEvent());
         assertNotNull(report.getHostInfo());

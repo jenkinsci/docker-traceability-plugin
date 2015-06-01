@@ -33,31 +33,29 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.annotation.CheckForNull;
 import javax.annotation.Nonnull;
-import jenkins.model.Jenkins;
 import org.jenkinsci.plugins.docker.commons.fingerprint.DockerFingerprints;
-import org.jenkinsci.plugins.docker.traceability.DockerEventListener;
+import org.jenkinsci.plugins.docker.traceability.model.DockerTraceabilityReportListener;
 import org.jenkinsci.plugins.docker.traceability.model.DockerTraceabilityReport;
 import org.jenkinsci.plugins.docker.traceability.DockerTraceabilityPlugin;
 import org.jenkinsci.plugins.docker.traceability.fingerprint.DockerDeploymentRefFacet;
 import org.jenkinsci.plugins.docker.traceability.fingerprint.DockerInspectImageFacet;
-import org.jenkinsci.plugins.docker.traceability.util.FingerprintsHelper;
 
 /**
  * Listens for {@link DockerTraceabilityReport}s and pushes them to fingerprints.
  * @author Oleg Nenashev
  */
 @Extension
-public class DockerEventsListenerImpl extends DockerEventListener {
+public class DockerTraceabilityReportListenerImpl extends DockerTraceabilityReportListener {
 
     private final static Logger LOGGER = Logger.getLogger(DockerTraceabilityPlugin.class.getName());
     
     @Override
-    public void onEvent(DockerTraceabilityReport event) {
-        final String imageId = event.getImageId();
+    public void onReport(DockerTraceabilityReport report) {
+        final String imageId = report.getImageId();
         LOGGER.log(Level.FINE, "Got an event for image {0}", imageId);       
         
         try {
-            processEvent(event);
+            processEvent(report);
         } catch (Throwable ex) { // Catch everything
             LOGGER.log(Level.WARNING, "Cannot retrieve the fingerprint", ex);
         } 
@@ -76,16 +74,16 @@ public class DockerEventsListenerImpl extends DockerEventListener {
         final InspectContainerResponse containerInfo = report.getContainer();
         @CheckForNull Fingerprint containerFP = null;
         if (containerInfo != null) {
-           final String containerId = containerInfo.getId();
-           containerFP = DockerTraceabilityHelper.make(containerId);
-           if (containerFP != null) {
-                DockerDeploymentFacet facet = DockerDeploymentFacet.addEvent(containerFP, report);
+            final String containerId = containerInfo.getId();
+            containerFP = DockerTraceabilityHelper.make(containerId);
+            if (containerFP != null) {
+                DockerDeploymentFacet.addEvent(containerFP, report);
                 DockerDeploymentRefFacet.addRef(imageFP, containerInfo.getId());
-           } else {
-               LOGGER.log(Level.WARNING, "Cannot retrieve the fingerprint for containerId={0}", containerInfo.getId());
-           }
-           // Notify listeners
-           DockerEventListener.fireNewDeployment(containerId);
+            } else {
+                LOGGER.log(Level.WARNING, "Cannot retrieve the fingerprint for containerId={0}", containerInfo.getId());
+            }
+            // Notify listeners
+            DockerTraceabilityReportListener.fireNewDeployment(containerId);
         }
         
         // Update image facets by a new info if available
@@ -95,13 +93,12 @@ public class DockerEventsListenerImpl extends DockerEventListener {
                     imageInfo, report.getImageName());         
         }
         
-        // Process commands
-        // TODO: implement
+        // Process other commands when it is required
     }
 
     @Override
     public void onNewDeployment(String containerId) {
-        final DockerEventsAction action = DockerTraceabilityHelper.getTraceabilityAction();
+        final DockerTraceabilityRootAction action = DockerTraceabilityRootAction.getInstance();
         if (action == null) {
             return; // Hopefully we'll register the container later
         }

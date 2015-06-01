@@ -32,6 +32,7 @@ import hudson.BulkChange;
 import hudson.Extension;
 import hudson.XmlFile;
 import hudson.model.AbstractProject;
+import hudson.model.Action;
 import hudson.model.Api;
 import hudson.model.Fingerprint;
 import hudson.model.RootAction;
@@ -46,7 +47,7 @@ import hudson.security.Permission;
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.Collection;
+import java.util.Collections;
 import java.util.Date;
 import java.util.HashSet;
 import java.util.LinkedList;
@@ -64,10 +65,9 @@ import static jenkins.model.Jenkins.XSTREAM;
 import org.acegisecurity.AccessDeniedException;
 import org.apache.commons.lang.StringUtils;
 import org.jenkinsci.plugins.docker.commons.fingerprint.DockerFingerprints;
-import org.jenkinsci.plugins.docker.traceability.DockerEventListener;
+import org.jenkinsci.plugins.docker.traceability.model.DockerTraceabilityReportListener;
 import org.jenkinsci.plugins.docker.traceability.DockerTraceabilityPlugin;
 import org.jenkinsci.plugins.docker.traceability.fingerprint.DockerContainerRecord;
-import org.jenkinsci.plugins.docker.traceability.model.DockerRecordsRegistry;
 import org.jenkinsci.plugins.docker.traceability.fingerprint.DockerDeploymentFacet;
 import org.jenkinsci.plugins.docker.traceability.model.DockerAPIReport;
 import org.jenkinsci.plugins.docker.traceability.model.DockerEvent;
@@ -92,13 +92,13 @@ import org.kohsuke.stapler.interceptor.RequirePOST;
  */
 @Extension
 @ExportedBean
-public class DockerEventsAction implements RootAction, SearchableModelObject, Saveable {
+public class DockerTraceabilityRootAction implements RootAction, SearchableModelObject, Saveable {
 
     private final static Logger LOGGER = Logger.getLogger(DockerTraceabilityPlugin.class.getName());
     
     private @CheckForNull Set<String> containerIDs;
 
-    public DockerEventsAction() {
+    public DockerTraceabilityRootAction() {
         load();
     }
     
@@ -111,11 +111,15 @@ public class DockerEventsAction implements RootAction, SearchableModelObject, Sa
      * @return Docker container IDs.
      */
     public synchronized @Nonnull Set<String> getContainerIDs() {
-        return (containerIDs == null) ? new HashSet<String>() : new TreeSet<String>(containerIDs);
+        return (containerIDs == null) ?  Collections.<String>emptySet() : new TreeSet<String>(containerIDs);
     }
     
     @Exported
     public synchronized @Nonnull List<DockerAPIReport> records() {
+        if (containerIDs == null) {
+            return Collections.emptyList();
+        }
+        
         final List<DockerAPIReport> res = new ArrayList<DockerAPIReport>(containerIDs.size());
         for (String containerId : containerIDs) {
             DockerAPIReport apiReport = DockerAPIReport.forContainer(containerId);
@@ -155,22 +159,11 @@ public class DockerEventsAction implements RootAction, SearchableModelObject, Sa
             save();
         }
     }
-   
-    public Set<String> getImageIDs() {
-        //TODO: add filters
-        return FingerprintsHelper.getImagesWithFingerprints();
-    }
 
     @Restricted(NoExternalUse.class)
     public @CheckForNull Fingerprint getFingerprint(@Nonnull String containerId) {
         return DockerTraceabilityHelper.of(containerId);
     }
-    
-    public @Nonnull String getDeploymentStats(@Nonnull Fingerprint fp, @Nonnull String containerId) {
-        DockerDeploymentFacet facet = FingerprintsHelper.getFacet(fp, DockerDeploymentFacet.class);
-        //TODO: more info
-        return facet != null ? "Yes, " + facet.getDeploymentRecords().size() + " record(s)" : "No";
-    } 
     
     public @CheckForNull DockerDeploymentFacet getDeploymentFacet(@Nonnull String containerId) {
         Fingerprint fp = DockerTraceabilityHelper.of(containerId);
@@ -187,6 +180,10 @@ public class DockerEventsAction implements RootAction, SearchableModelObject, Sa
      * @return List of container records for all entries.
      */
     public synchronized @Nonnull List<DockerContainerRecord> getContainerRecords() {
+        if (containerIDs == null) {
+            return Collections.emptyList();
+        }
+        
         final List<DockerContainerRecord> res = new ArrayList<DockerContainerRecord>(containerIDs.size());
         for (String containerId : containerIDs) {
             DockerContainerRecord rec = DockerTraceabilityHelper.getLastContainerRecord(containerId);
@@ -211,61 +208,9 @@ public class DockerEventsAction implements RootAction, SearchableModelObject, Sa
     public String getUrlName() {
         return "docker-traceability";
     }
-    
-    /**
-     * Retrieves all registered {@link DockerDeploymentFacet}s.
-     * @return Created record entities
-     */
-    public List<DockerRecordsRegistry> getAllEvents() {
-        if (!hasPermission(DockerTraceabilityPlugin.READ_DETAILS)) {
-            return new LinkedList<DockerRecordsRegistry>();
-        }
-        
-        List<DockerRecordsRegistry> result = new LinkedList<DockerRecordsRegistry>();
-        Set<String> imageIDs = FingerprintsHelper.getImagesWithFingerprints();
-        for (String imageId : imageIDs) {
-            final Fingerprint fp;
-            try {
-                fp = DockerFingerprints.of(imageId);
-            } catch(IOException ex) {
-                // TODO: just ignore for now
-                continue;
-            }
-            DockerDeploymentFacet facet = FingerprintsHelper.getFacet(fp, DockerDeploymentFacet.class);
-            if (facet != null) { // The image has not been deployed yet
-                result.add(new DockerRecordsRegistry(facet.getDeploymentRecords()));
-            }
-        }
-        return result;
-    }
-    
-    //TODO: API to export events with by-image, by-container and by-host filtering
-
-    //TODO: remove
-    /**
-     * 
-     * @param req Incoming request
-     * @param rsp Response
-     * @param imageId image id
-     * @param jobName job name, to which the facet should be attached
-     * @throws IOException Request processing error
-     * @throws ServletException Servlet error
-     * @deprecated Test only 
-     */
-    @Deprecated
-    public void doTestSubmitBuildRef(StaplerRequest req, StaplerResponse rsp,
-            @QueryParameter(required = true) String imageId,
-            @QueryParameter(required = true) String jobName) throws IOException, ServletException {
-        Run latest = Jenkins.getInstance().getItem(jobName, Jenkins.getInstance(), 
-                AbstractProject.class).getLastBuild();
-        DockerFingerprints.addFromFacet(null,imageId, latest);
-        rsp.sendRedirect2(Jenkins.getInstance().getRootUrl());
-    }
        
     /**
      * Submits a new event through Jenkins API.
-     * @param req Incoming request
-     * @param rsp Output response
      * @param inspectData JSON output of docker inspect container (array of container infos)
      * @param hostName Optional name of the host, which submitted the event
      *      &quot;unknown&quot; by default
@@ -278,12 +223,13 @@ public class DockerEventsAction implements RootAction, SearchableModelObject, Sa
      *      Default value - current time
      * @param environment Optional field, which describes the environment
      * @param imageName Optional field, which provides the name of the image
+     * @return {@link HttpResponse}
      * @throws IOException Request processing error
      * @throws ServletException Servlet error
      */
     //TODO: parameters check
     @RequirePOST
-    public void doSubmitContainerStatus(StaplerRequest req, StaplerResponse rsp,
+    public HttpResponse doSubmitContainerStatus(
             @QueryParameter(required = true) String inspectData,
             @QueryParameter(required = false) String hostId,
             @QueryParameter(required = false) String hostName,
@@ -313,26 +259,26 @@ public class DockerEventsAction implements RootAction, SearchableModelObject, Sa
                     inspectContainerResponse, 
                     inspectContainerResponse.getImageId(), effectiveImageName,
                     new LinkedList<String>(), effectiveEnvironment);
-            DockerEventListener.fire(res);
+            DockerTraceabilityReportListener.fire(res);
         }
+        return HttpResponses.ok();
     } 
        
     /**
      * Submits a new {@link DockerTraceabilityReport} via API.
-     * @param req Incoming request
-     * @param rsp Output response
      * @param json String representation of {@link DockerTraceabilityReport}
+     * @return {@link HttpResponse}
      * @throws ServletException Servlet error
      * @throws IOException Processing error
      */
     @RequirePOST
-    public void doSubmitEvent(StaplerRequest req, StaplerResponse rsp, 
-            @QueryParameter(required = true) String json) 
+    public HttpResponse doSubmitReport(@QueryParameter(required = true) String json) 
             throws IOException, ServletException { 
         checkPermission(DockerTraceabilityPlugin.SUBMIT);
         ObjectMapper mapper = new ObjectMapper();
         final DockerTraceabilityReport report = mapper.readValue(json, DockerTraceabilityReport.class);
-        DockerEventListener.fire(report);
+        DockerTraceabilityReportListener.fire(report);
+        return HttpResponses.ok();
     }
     
     /**
@@ -359,18 +305,16 @@ public class DockerEventsAction implements RootAction, SearchableModelObject, Sa
     
     /**
      * Removes the container reference from the registry.
-     * @param req Stapler request
-     * @param rsp Stapler response
      * @param id Container ID. Method supports full 64-char IDs only.
-     * @throws IOException Cannot save the updated {@link DockerEventsAction}
+     * @throws IOException Cannot save the updated {@link DockerTraceabilityRootAction}
      * @throws ServletException Servlet exception
      */
     @RequirePOST
-    public void doRemoveContainer(StaplerRequest req, StaplerResponse rsp, 
-            @QueryParameter(required = true) String id) 
+    public HttpResponse doDeleteContainer(@QueryParameter(required = true) String id) 
             throws IOException, ServletException {  
         checkPermission(DockerTraceabilityPlugin.DELETE);
         removeContainerID(id);
+        return HttpResponses.ok();
     }
     
     /**
@@ -400,36 +344,33 @@ public class DockerEventsAction implements RootAction, SearchableModelObject, Sa
      * Retrieves the latest container status via API.
      * The output will be retrieved in JSON. Supports filers. Missing 
      * &quot;since&quot; and &quot;until&quot; 
-     * @param req Incoming request
-     * @param rsp Output response
-     * @param containerId ID of the container, for which the info should be retrieved.
+     * @param id ID of the container, for which the info should be retrieved.
      *    Short container IDs are not supported.
      * @throws IOException Processing error
      * @throws ServletException Servlet error
+     * @return Raw JSON output compatible with docker inspect
      */
-    public void doRawContainerInfo(StaplerRequest req, StaplerResponse rsp, 
-            @QueryParameter(required = true) String containerId) 
+    public HttpResponse doRawContainerInfo(@QueryParameter(required = true) String id) 
             throws IOException, ServletException {     
         checkPermission(DockerTraceabilityPlugin.READ_DETAILS);
         
         //TODO: check containerID format
-        final DockerTraceabilityReport report = DockerTraceabilityHelper.getLastReport(containerId);
+        final DockerTraceabilityReport report = DockerTraceabilityHelper.getLastReport(id);
         if (report == null) {
-            rsp.sendError(404, "No info available for the containerId=" + containerId);
-            return;
+            return HttpResponses.error(404, "No info available for the containerId=" + id);
         }
         final InspectContainerResponse inspectInfo = report.getContainer();
         if (inspectInfo == null) {
             assert false : "Input logic should reject such cases";
-            rsp.sendError(500, "Cannot retrieve the container's status");
+            return HttpResponses.error(500, "Cannot retrieve the container's status"); 
         }
         
         // Return raw JSON in the response
-        ObjectMapper mapper = new ObjectMapper();
         InspectContainerResponse[] out = {inspectInfo};
-        mapper.writeValue(rsp.getOutputStream(), out);
+        return toJSONResponse(out);
     }  
     
+    //TODO: More filtering
     /**
      * Queries container statuses via API.
      * The output will be retrieved in JSON. Supports filters.
@@ -465,13 +406,13 @@ public class DockerEventsAction implements RootAction, SearchableModelObject, Sa
         List<Object> result = new ArrayList<Object>(deploymentRecords.size());
         for (DockerContainerRecord record : deploymentRecords) {
             // time filters
-            final long eventTime = record.getEvent().getEvent().getTime();
+            final long eventTime = record.getReport().getEvent().getTime();
             if (eventTime < minTime || eventTime > maxTime) {
                 continue;
             }
             
             // Report data
-            final DockerTraceabilityReport report = record.getEvent();
+            final DockerTraceabilityReport report = record.getReport();
             switch (queryMode) {
                 case all:
                     result.add(report);
@@ -506,28 +447,24 @@ public class DockerEventsAction implements RootAction, SearchableModelObject, Sa
     /**
      * Retrieves the latest raw status via API.
      * The output will be retrieved in JSON.
-     * @param req Incoming request
-     * @param rsp Output response
      * @param id ID of the image, for which the info should be retrieved.
      *    Short container IDs are not supported.
      * @throws IOException Processing error
      * @throws ServletException Servlet error
+     * @return {@link HttpResponse}
      */
-    public void doRawImageInfo(StaplerRequest req, StaplerResponse rsp, 
-            @QueryParameter(required = true) String id) 
+    public HttpResponse doRawImageInfo(@QueryParameter(required = true) String id) 
             throws IOException, ServletException {     
         checkPermission(DockerTraceabilityPlugin.READ_DETAILS);
         
         final InspectImageResponse report = DockerTraceabilityHelper.getLastInspectImageResponse(id);
-        if (report == null) {
-            rsp.sendError(404, "No info available for the imageId=" + id);
-            return;
+        if (report == null) {   
+            return HttpResponses.error(404, "No info available for the imageId=" + id);
         }
         
         // Return raw JSON in the response
-        ObjectMapper mapper = new ObjectMapper();
         InspectImageResponse[] out = {report};
-        mapper.writeValue(rsp.getOutputStream(), out);
+        return toJSONResponse(out);
     } 
     
     /**
@@ -595,9 +532,13 @@ public class DockerEventsAction implements RootAction, SearchableModelObject, Sa
         return searchIndexBuilder;
     }
 
-    protected final XmlFile getConfigFile() {
-        return new XmlFile(XSTREAM, new File(Jenkins.getInstance().getRootDir(), 
-                DockerEventsAction.class.getName()+".xml"));
+    private @Nonnull XmlFile getConfigFile() throws IOException {
+        final Jenkins j = Jenkins.getInstance();
+        if (j==null) {
+            throw new IOException("Jenkins instance is not ready, cannot retrieve the root directory");
+        }
+        
+        return new XmlFile(XSTREAM, new File(j.getRootDir(), DockerTraceabilityRootAction.class.getName()+".xml"));
     }
     
     @Override
@@ -615,12 +556,13 @@ public class DockerEventsAction implements RootAction, SearchableModelObject, Sa
             containerIDs.clear();
         }
 
-        XmlFile config = getConfigFile();
+        XmlFile config = null; 
         try {
+            config = getConfigFile();
             if(config.exists())
                 config.unmarshal(this);
         } catch (IOException e) {
-            LOGGER.log(Level.SEVERE, "Failed to load "+config,e);
+            LOGGER.log(Level.SEVERE, "Failed to load the configuration from config path = "+config,e);
         }
     }
     
@@ -660,5 +602,25 @@ public class DockerEventsAction implements RootAction, SearchableModelObject, Sa
                 return DEFAULT;
             }
         }
+    }
+    
+    /**
+     * Gets the {@link DockerTraceabilityRootAction} of Jenkins instance.
+     * @return Instance or null if it is not available
+     */
+    public static @CheckForNull DockerTraceabilityRootAction getInstance() {
+        Jenkins j = Jenkins.getInstance();
+        if (j == null) {
+            return null;
+        }
+        
+        @CheckForNull DockerTraceabilityRootAction action = null;
+        for (Action rootAction : j.getActions()) {
+            if (rootAction instanceof DockerTraceabilityRootAction) {
+                action = (DockerTraceabilityRootAction) rootAction;
+                break;
+            }
+        } 
+        return action;
     }
 }

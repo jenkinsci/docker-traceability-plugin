@@ -31,6 +31,7 @@ import java.util.Locale;
 import javax.annotation.CheckForNull;
 import javax.annotation.Nonnull;
 import jenkins.model.FingerprintFacet;
+import org.jenkinsci.plugins.docker.commons.fingerprint.DockerFingerprintFacet;
 import org.jenkinsci.plugins.docker.traceability.core.DockerTraceabilityHelper;
 import org.jenkinsci.plugins.docker.traceability.model.DockerEventType;
 import org.jenkinsci.plugins.docker.traceability.model.DockerTraceabilityReport;
@@ -43,7 +44,7 @@ import org.jenkinsci.plugins.docker.traceability.util.FingerprintsHelper;
  * This facet should be added to container {@link Fingerprint}s.
  * @author Oleg Nenashev
  */
-public class DockerDeploymentFacet extends FingerprintFacet {
+public class DockerDeploymentFacet extends DockerFingerprintFacet {
        
     private final List<DockerContainerRecord> deploymentRecords 
             = new ArrayList<DockerContainerRecord>();
@@ -76,7 +77,7 @@ public class DockerDeploymentFacet extends FingerprintFacet {
     public synchronized @Nonnull String getLastStatus() {
         String lastStatus = null;
         for (DockerContainerRecord record : deploymentRecords) {
-            String recordStatus = record.getEvent().getEvent().getStatus();
+            String recordStatus = record.getReport().getEvent().getStatus();
             DockerEventType status = DockerEventType.fromString(recordStatus);
             if (status != DockerEventType.NONE) { // Yes, we accept Unknown statuses frow new Docker versions
                 lastStatus = recordStatus.toUpperCase(Locale.ENGLISH);
@@ -97,6 +98,9 @@ public class DockerDeploymentFacet extends FingerprintFacet {
      */
     public static @CheckForNull DockerDeploymentFacet getDeploymentFacet(String containerId) {      
         Fingerprint fp = DockerTraceabilityHelper.of(containerId);
+        if (fp == null) {
+            return null;
+        }
         return FingerprintsHelper.getFacet(fp, DockerDeploymentFacet.class);     
     }
     

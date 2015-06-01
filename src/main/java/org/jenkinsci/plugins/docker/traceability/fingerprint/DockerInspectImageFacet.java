@@ -29,6 +29,7 @@ import java.io.IOException;
 import javax.annotation.CheckForNull;
 import javax.annotation.Nonnull;
 import jenkins.model.FingerprintFacet;
+import org.jenkinsci.plugins.docker.commons.fingerprint.DockerFingerprintFacet;
 import org.jenkinsci.plugins.docker.traceability.util.FingerprintsHelper;
 
 /**
@@ -38,7 +39,7 @@ import org.jenkinsci.plugins.docker.traceability.util.FingerprintsHelper;
  * maintained.
  * @author Oleg Nenashev
  */
-public class DockerInspectImageFacet extends FingerprintFacet {
+public class DockerInspectImageFacet extends DockerFingerprintFacet {
     
     private long reportTimestamp;
     private @CheckForNull String imageName;
