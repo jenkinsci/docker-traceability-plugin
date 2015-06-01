@@ -54,6 +54,7 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Locale;
 import java.util.Set;
+import java.util.SortedSet;
 import java.util.TreeSet;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -402,7 +403,7 @@ public class DockerTraceabilityRootAction implements RootAction, SearchableModel
             return HttpResponses.error(404, "No info available for the containerId=" + id);
         }
         
-        List<DockerContainerRecord> deploymentRecords = facet.getDeploymentRecords();
+        final SortedSet<DockerContainerRecord> deploymentRecords = facet.getDeploymentRecords();
         List<Object> result = new ArrayList<Object>(deploymentRecords.size());
         for (DockerContainerRecord record : deploymentRecords) {
             // time filters
