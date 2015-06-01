@@ -28,6 +28,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
+import java.util.TreeSet;
 import javax.annotation.CheckForNull;
 import javax.annotation.Nonnull;
 import jenkins.model.FingerprintFacet;
@@ -46,9 +47,9 @@ import org.jenkinsci.plugins.docker.traceability.util.FingerprintsHelper;
  */
 public class DockerDeploymentFacet extends DockerFingerprintFacet {
        
-    private final List<DockerContainerRecord> deploymentRecords 
-            = new ArrayList<DockerContainerRecord>();
-
+    private final TreeSet<DockerContainerRecord> deploymentRecords 
+            = new TreeSet<DockerContainerRecord>(new DockerContainerRecord.TimeComparator());
+            
     public DockerDeploymentFacet(Fingerprint fingerprint, long timestamp) {
         super(fingerprint, timestamp);
     }
@@ -67,7 +68,7 @@ public class DockerDeploymentFacet extends DockerFingerprintFacet {
     }
 
     public synchronized @CheckForNull DockerContainerRecord getLatest() {
-        return (deploymentRecords.isEmpty()) ? null : deploymentRecords.get(deploymentRecords.size()-1);
+        return (deploymentRecords.isEmpty()) ? null : deploymentRecords.last();
     }
     
     /**
