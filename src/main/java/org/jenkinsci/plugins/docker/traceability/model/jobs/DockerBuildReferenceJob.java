@@ -116,7 +116,7 @@ public class DockerBuildReferenceJob extends AbstractProject<DockerBuildReferenc
     @Override
     public synchronized void removeRun(@Nonnull DockerBuildReferenceRun run) {
         super.removeRun(run);
-        byDockerId.remove(run.getItemId(), run);
+        byDockerId.remove(run.getItemId());
     }
     
     /**
