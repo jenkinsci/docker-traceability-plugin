@@ -55,18 +55,27 @@ public class DockerTraceabilityReportListenerImpl extends DockerTraceabilityRepo
         LOGGER.log(Level.FINE, "Got an event for image {0}", imageId);       
         
         try {
-            processEvent(report);
+            processReport(report);
         } catch (Throwable ex) { // Catch everything
             LOGGER.log(Level.WARNING, "Cannot retrieve the fingerprint", ex);
         } 
     }   
     
-    private void processEvent(@Nonnull DockerTraceabilityReport report) throws IOException {
+    private void processReport(@Nonnull DockerTraceabilityReport report) throws IOException {
+        DockerTraceabilityPlugin plugin = DockerTraceabilityPlugin.getInstance();
+
         // Get fingerprints for the image
-        final Fingerprint imageFP = DockerFingerprints.of(report.getImageId());
-        if (imageFP == null) {
-            LOGGER.log(Level.FINE, "Cannot find a fingerprint for image {0}. "
-                 + "Most probably, the image has not been created in Jenkins. Event will be ignored", report.getImageId());
+        Fingerprint imageFP = DockerFingerprints.of(report.getImageId());
+        if (imageFP == null && plugin.getConfiguration().isCreateImageFingerprints()) {
+            LOGGER.log(Level.FINE, "Creating a new fingerprint for image {0}", report.getImageId());
+            imageFP = DockerTraceabilityHelper.makeImage(report.getImageId(), 
+                    report.getImageName(), report.getEvent().getTime());
+        }
+        
+        if (imageFP == null) { // We don't create anything and exit
+            LOGGER.log(Level.FINE, "Cannot get or create a fingerprint for image {0}. "
+                + "Most probably, the image has not been created in Jenkins. Report will be ignored", 
+                    report.getImageId());
             return;
         }
                
@@ -75,7 +84,8 @@ public class DockerTraceabilityReportListenerImpl extends DockerTraceabilityRepo
         @CheckForNull Fingerprint containerFP = null;
         if (containerInfo != null) {
             final String containerId = containerInfo.getId();
-            containerFP = DockerTraceabilityHelper.make(containerId);
+            final String containerName = hudson.Util.fixEmptyAndTrim(containerInfo.getName());
+            containerFP = DockerTraceabilityHelper.make(containerId, containerName, report.getEvent().getTime());
             if (containerFP != null) {
                 DockerDeploymentFacet.addEvent(containerFP, report);
                 DockerDeploymentRefFacet.addRef(imageFP, containerInfo.getId());

@@ -41,6 +41,8 @@ import org.jenkinsci.plugins.docker.traceability.DockerTraceabilityPlugin;
 import org.jenkinsci.plugins.docker.traceability.fingerprint.DockerContainerRecord;
 import org.jenkinsci.plugins.docker.traceability.fingerprint.DockerDeploymentFacet;
 import org.jenkinsci.plugins.docker.traceability.fingerprint.DockerInspectImageFacet;
+import org.jenkinsci.plugins.docker.traceability.model.jobs.DockerBuildReferenceFactory;
+import org.jenkinsci.plugins.docker.traceability.model.jobs.DockerBuildReferenceRun;
 import org.jenkinsci.plugins.docker.traceability.model.DockerTraceabilityReport;
 import org.jenkinsci.plugins.docker.traceability.util.FingerprintsHelper;
 
@@ -102,16 +104,43 @@ public class DockerTraceabilityHelper {
     /**
      * Get or create a fingerprint by the specified container ID.
      * @param containerId Full 64-symbol container id. Short forms are not supported.
+     * @param name Optional container name
+     * @param timestamp Timestamp if there is a need to create a new container
      * @return Fingerprint. null if Jenkins has not been initialized yet
      * @throws IOException Fingerprint loading error
      */
-    public static @CheckForNull Fingerprint make(@Nonnull String containerId) throws IOException {
+    public static @CheckForNull Fingerprint make(@Nonnull String containerId, 
+            @CheckForNull String name, long timestamp) throws IOException {
         final Jenkins jenkins = Jenkins.getInstance();
         if (jenkins == null) {
             return null;
         }
         
-        return jenkins.getFingerprintMap().getOrCreate(null, CONTAINER_FP_NAME, getContainerHash(containerId));
+        final DockerBuildReferenceRun run = DockerBuildReferenceFactory.forContainer(containerId, name, timestamp);
+        final Fingerprint fp = jenkins.getFingerprintMap().getOrCreate(
+                run, "Container "+(name != null ? name : name), getContainerHash(containerId));
+        return fp;
+    }
+    
+    /**
+     * Get or create a fingerprint by the specified image ID.
+     * @param imageId Full 64-symbol image id. Short forms are not supported.
+     * @param name Optional container name
+     * @param timestamp Timestamp if there is a need to create a new image
+     * @return Fingerprint. null if Jenkins has not been initialized yet
+     * @throws IOException Fingerprint loading error
+     */
+    public static @CheckForNull Fingerprint makeImage(@Nonnull String imageId, 
+            @CheckForNull String name, long timestamp) throws IOException {
+        final Jenkins jenkins = Jenkins.getInstance();
+        if (jenkins == null) {
+            return null;
+        }
+        
+        final DockerBuildReferenceRun run = DockerBuildReferenceFactory.forImage(imageId, name, timestamp);
+        final Fingerprint fp = jenkins.getFingerprintMap().getOrCreate(
+                run, "Image "+(name != null ? name : name), getImageHash(imageId));
+        return fp;
     }
     
     /**
