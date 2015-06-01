@@ -164,25 +164,7 @@ public class DockerTraceabilityHelper {
         }
     }
     
-    /**
-     * Gets the {@link DockerTraceabilityRootAction} of Jenkins instance.
-     * @return Instance or null if it is not available
-     */
-    public static @CheckForNull DockerTraceabilityRootAction getTraceabilityAction() {
-        Jenkins j = Jenkins.getInstance();
-        if (j == null) {
-            return null;
-        }
-        
-        @CheckForNull DockerTraceabilityRootAction action = null;
-        for (Action rootAction : j.getActions()) {
-            if (rootAction instanceof DockerTraceabilityRootAction) {
-                action = (DockerTraceabilityRootAction) rootAction;
-                break;
-            }
-        } 
-        return action;
-    }
+    
     
     /**
      * Formats the time to the Docker-standard format.

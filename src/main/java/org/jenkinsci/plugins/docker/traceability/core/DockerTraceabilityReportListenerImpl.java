@@ -98,7 +98,7 @@ public class DockerTraceabilityReportListenerImpl extends DockerTraceabilityRepo
 
     @Override
     public void onNewDeployment(String containerId) {
-        final DockerTraceabilityRootAction action = DockerTraceabilityHelper.getTraceabilityAction();
+        final DockerTraceabilityRootAction action = DockerTraceabilityRootAction.getInstance();
         if (action == null) {
             return; // Hopefully we'll register the container later
         }

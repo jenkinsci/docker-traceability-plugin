@@ -32,6 +32,7 @@ import hudson.BulkChange;
 import hudson.Extension;
 import hudson.XmlFile;
 import hudson.model.AbstractProject;
+import hudson.model.Action;
 import hudson.model.Api;
 import hudson.model.Fingerprint;
 import hudson.model.RootAction;
@@ -632,5 +633,25 @@ public class DockerTraceabilityRootAction implements RootAction, SearchableModel
                 return DEFAULT;
             }
         }
+    }
+    
+    /**
+     * Gets the {@link DockerTraceabilityRootAction} of Jenkins instance.
+     * @return Instance or null if it is not available
+     */
+    public static @CheckForNull DockerTraceabilityRootAction getInstance() {
+        Jenkins j = Jenkins.getInstance();
+        if (j == null) {
+            return null;
+        }
+        
+        @CheckForNull DockerTraceabilityRootAction action = null;
+        for (Action rootAction : j.getActions()) {
+            if (rootAction instanceof DockerTraceabilityRootAction) {
+                action = (DockerTraceabilityRootAction) rootAction;
+                break;
+            }
+        } 
+        return action;
     }
 }

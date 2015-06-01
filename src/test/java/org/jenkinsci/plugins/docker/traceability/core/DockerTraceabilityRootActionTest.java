@@ -76,7 +76,7 @@ public class DockerTraceabilityRootActionTest {
         
         // Init system data
         JenkinsRule.WebClient client = j.createWebClient();
-        final DockerTraceabilityRootAction action = DockerTraceabilityHelper.getTraceabilityAction();
+        final DockerTraceabilityRootAction action = DockerTraceabilityRootAction.getInstance();
         assertNotNull(action);
              
         // Prepare a run with Fingerprints and referenced facets
