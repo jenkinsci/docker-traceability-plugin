@@ -89,10 +89,15 @@ public class DockerTraceabilityPlugin extends Plugin {
         }
     }
 
+    void configure(DockerTraceabilityPluginConfiguration configuration) throws IOException {
+        this.configuration = configuration;
+        save();
+    }
+    
     @Override
     public void configure(StaplerRequest req, JSONObject formData) throws IOException, ServletException, Descriptor.FormException {
-        configuration = req.bindJSON(DockerTraceabilityPluginConfiguration.class, formData); 
-        save();
+        DockerTraceabilityPluginConfiguration _configuration = req.bindJSON(DockerTraceabilityPluginConfiguration.class, formData); 
+        configure(_configuration);
     }
      
     public Api getApi() {
