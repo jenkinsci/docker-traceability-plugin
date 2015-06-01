@@ -25,9 +25,9 @@ package org.jenkinsci.plugins.docker.traceability.fingerprint;
 
 import hudson.model.Fingerprint;
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.List;
+import java.util.Collections;
 import java.util.Locale;
+import java.util.SortedSet;
 import java.util.TreeSet;
 import javax.annotation.CheckForNull;
 import javax.annotation.Nonnull;
@@ -47,7 +47,7 @@ import org.jenkinsci.plugins.docker.traceability.util.FingerprintsHelper;
  */
 public class DockerDeploymentFacet extends DockerFingerprintFacet {
        
-    private final TreeSet<DockerContainerRecord> deploymentRecords 
+    private final SortedSet<DockerContainerRecord> deploymentRecords 
             = new TreeSet<DockerContainerRecord>(new DockerContainerRecord.TimeComparator());
             
     public DockerDeploymentFacet(Fingerprint fingerprint, long timestamp) {
@@ -63,8 +63,8 @@ public class DockerDeploymentFacet extends DockerFingerprintFacet {
         getFingerprint().save();
     }
     
-    public synchronized @Nonnull List<DockerContainerRecord> getDeploymentRecords() {
-        return new ArrayList<DockerContainerRecord>(deploymentRecords);
+    public synchronized @Nonnull SortedSet<DockerContainerRecord> getDeploymentRecords() {
+        return Collections.unmodifiableSortedSet(deploymentRecords);
     }
 
     public synchronized @CheckForNull DockerContainerRecord getLatest() {
