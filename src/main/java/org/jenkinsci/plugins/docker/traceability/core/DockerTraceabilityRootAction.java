@@ -32,6 +32,7 @@ import hudson.BulkChange;
 import hudson.Extension;
 import hudson.XmlFile;
 import hudson.model.AbstractProject;
+import hudson.model.Action;
 import hudson.model.Api;
 import hudson.model.Fingerprint;
 import hudson.model.RootAction;
@@ -206,37 +207,6 @@ public class DockerTraceabilityRootAction implements RootAction, SearchableModel
     @Override
     public String getUrlName() {
         return "docker-traceability";
-    }
-    
-    
-
-    //TODO: remove
-    /**
-     * 
-     * @param req Incoming request
-     * @param rsp Response
-     * @param imageId image id
-     * @param jobName job name, to which the facet should be attached
-     * @throws IOException Request processing error
-     * @throws ServletException Servlet error
-     * @deprecated Test only 
-     */
-    @Deprecated
-    public void doTestSubmitBuildRef(StaplerRequest req, StaplerResponse rsp,
-            @QueryParameter(required = true) String imageId,
-            @QueryParameter(required = true) String jobName) throws IOException, ServletException {
-        final Jenkins j = Jenkins.getInstance();
-        if (j == null) {
-            throw new IOException("Jenkins instance is not active");
-        }
-        final AbstractProject item = j.getItem(jobName, j, AbstractProject.class);
-        final Run latest = item != null ? item.getLastBuild() : null;
-        if (latest == null) {
-            throw new IOException("Cannot find a project or run to modify"); 
-        }
-        
-        DockerFingerprints.addFromFacet(null,imageId, latest);
-        rsp.sendRedirect2(j.getRootUrl());
     }
        
     /**
@@ -632,5 +602,25 @@ public class DockerTraceabilityRootAction implements RootAction, SearchableModel
                 return DEFAULT;
             }
         }
+    }
+    
+    /**
+     * Gets the {@link DockerTraceabilityRootAction} of Jenkins instance.
+     * @return Instance or null if it is not available
+     */
+    public static @CheckForNull DockerTraceabilityRootAction getInstance() {
+        Jenkins j = Jenkins.getInstance();
+        if (j == null) {
+            return null;
+        }
+        
+        @CheckForNull DockerTraceabilityRootAction action = null;
+        for (Action rootAction : j.getActions()) {
+            if (rootAction instanceof DockerTraceabilityRootAction) {
+                action = (DockerTraceabilityRootAction) rootAction;
+                break;
+            }
+        } 
+        return action;
     }
 }

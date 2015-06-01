@@ -60,31 +60,4 @@ public class FingerprintsHelper {
         fingerprint.save();
     }
     
-    /**
-     * Get all imageIDs, which have fingerprints somewhere. 
-     * This method iterates through {@link Item}s and {@link Run}s in order to
-     * find actions with image fingerprint references, there is no any caching of the data.
-     * @return Collection of image IDs, which have declared fingerprints.
-     * @deprecated Not recommended for a use due to the performance issues.
-     *      A better method will be implemented in docker-commons at some point
-     */
-    @Deprecated
-    public static @Nonnull Set<String> getImagesWithFingerprints() {
-        final Set<String> result = new HashSet<String>();
-        final Jenkins j = Jenkins.getInstance();
-        if (j == null) {
-            return result;
-        }
-
-        for (AbstractProject item : j.getAllItems(AbstractProject.class)) {
-            RunList<Run> runs = item.getBuilds();
-            for (Run run : runs) {
-                DockerFingerprintAction action = run.getAction(DockerFingerprintAction.class);
-                if (action != null) {
-                    result.addAll(action.getImageIDs());
-                }
-            }
-        }
-        return result;
-    }
 }

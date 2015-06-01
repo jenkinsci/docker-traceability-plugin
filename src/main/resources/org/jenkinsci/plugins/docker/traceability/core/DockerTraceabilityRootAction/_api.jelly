@@ -220,19 +220,5 @@
   <ul>
     <li><b>id</b> - ID of the container. Only full 64-symbol IDs are supported</li>
   </ul>
-  
-  <!-- Non-public method for test purposes
-  <h2>Test Commands <b style="color:red">(temporary)</b></h2>
-  <h4>$(JENKINS_URL)/docker-traceability/testSubmitBuildRef()</h4>
-  Creates a fake docker fingerprint to simplify the testing. Parameters:
-  <ul>
-    <li>imageId - Docker image ID</li>
-    <li>jobName - name of the job to be updated. The image will be added to the last build</li>
-  </ul>
-  <p/>
-  Sample imageID: 5366517d611967756a43c63a3223dbf645c5e9be66d594d86802dee143aad93a
-  <p/>
-  Call example: <i>curl http://localhost:8080/jenkins/docker-traceability/testSubmitBuildRef - -data-urlencode imageId=4300417211ebb75b48b06ed5640d641778f312072d24b37978682345cbb362b1 - -data-urlencode jobName=test</i>
-  -->
 
 </j:jelly>

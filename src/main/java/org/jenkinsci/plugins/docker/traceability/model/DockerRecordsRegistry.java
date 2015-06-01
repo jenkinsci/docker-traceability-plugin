@@ -37,8 +37,6 @@ import org.kohsuke.stapler.export.ExportedBean;
 @ExportedBean
 public class DockerRecordsRegistry {
     
-    private static final long serialVersionUID = 1L;
-    
     private final List<DockerContainerRecord> records;
 
     public DockerRecordsRegistry(List<DockerContainerRecord> records) {

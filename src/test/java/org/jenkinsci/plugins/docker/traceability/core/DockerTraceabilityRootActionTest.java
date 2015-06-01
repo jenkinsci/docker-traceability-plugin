@@ -81,7 +81,7 @@ public class DockerTraceabilityRootActionTest {
         
         // Init system data
         JenkinsRule.WebClient client = j.createWebClient();
-        final DockerTraceabilityRootAction action = DockerTraceabilityHelper.getTraceabilityAction();
+        final DockerTraceabilityRootAction action = DockerTraceabilityRootAction.getInstance();
         assertNotNull(action);
              
         // Prepare a run with Fingerprints and referenced facets
@@ -112,7 +112,7 @@ public class DockerTraceabilityRootActionTest {
     
     @Test
     @Bug(28656)
-    public void createFingerPrintsOnDemand() throws Exception {
+    public void createImageFingerprintsOnDemand() throws Exception {
         // Read data from resources
         String inspectData = JSONSamples.inspectContainerData.readString();
         InspectContainerResponse inspectResponse = JSONSamples.inspectContainerData.
@@ -121,7 +121,7 @@ public class DockerTraceabilityRootActionTest {
         final String imageId = inspectResponse.getImageId();
         
         // Retrieve instances
-        final DockerTraceabilityRootAction action = DockerTraceabilityHelper.getTraceabilityAction();
+        final DockerTraceabilityRootAction action = DockerTraceabilityRootAction.getInstance();
         assertNotNull(action);
         
         // Enable automatic fingerprints creation
