@@ -68,7 +68,7 @@ public class DockerInspectImageFacet extends DockerFingerprintFacet {
     
     /**
      * Time, when the latest report has been submitted.
-     * @return The time is specified in milliseconds since January 1, 1970, 00:00:00 GMT
+     * @return The time is specified in seconds since January 1, 1970, 00:00:00 GMT
      */
     public long getReportTimestamp() {
         return reportTimestamp;

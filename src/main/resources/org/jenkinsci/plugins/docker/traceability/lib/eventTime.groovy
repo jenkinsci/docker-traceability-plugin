@@ -35,13 +35,13 @@ f=namespace("lib/form")
 st.documentation() {
     text("Displays the time in the human-readable format")
     st.attribute(name: "time", use: "required") {
-      text("Time specified in milliseconds since January 1, 1970, 00:00:00 GMT") 
+      text("Time specified in seconds since January 1, 1970, 00:00:00 GMT") 
     }
 }
 
 TimeZone tz = TimeZone.getDefault();
-DateFormat df = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'");
+DateFormat df = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss'Z'");
 df.setTimeZone(tz);
-String isoDate = df.format(new Date(time));
+String isoDate = df.format(new Date(time*1000));
 
 text(isoDate)

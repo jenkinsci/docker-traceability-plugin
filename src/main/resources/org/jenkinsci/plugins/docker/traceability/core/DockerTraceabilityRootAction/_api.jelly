@@ -74,9 +74,9 @@
     <dt>id</dt>
     <dd>ID of the container. Only full 64-symbol IDs are supported</dd>
     <dt>since</dt> 
-    <dd>The time is specified in milliseconds since January 1, 1970, 00:00:00 GMT</dd>
+    <dd>The time is specified in seconds since January 1, 1970, 00:00:00 GMT</dd>
     <dt>until</dt>
-    <dd>The time is specified in milliseconds since January 1, 1970, 00:00:00 GMT</dd>
+    <dd>The time is specified in seconds since January 1, 1970, 00:00:00 GMT</dd>
     <dt>mode</dt>
     <dd>Defines a data to be retrieved. Supported values:
       <dl>
@@ -125,7 +125,7 @@
     <li><b>status</b> - Optional status of the container.  
         Default value - &quot;NONE&quot; (means that there is no status change)</li>
     <li><b>time</b> - Optional event time, the current server's time will be used by default.
-        The time is specified in milliseconds since January 1, 1970, 00:00:00 GMT</li>
+        The time is specified in seconds since January 1, 1970, 00:00:00 GMT</li>
     <li><b>imageName</b> - Optional name of the image. It can be extracted from &quot;docker images&quot; command output</li>    
     <li><b>environment</b> - Optional free-style string describing the environment</li>
   </ul>
