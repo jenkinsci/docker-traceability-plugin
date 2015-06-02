@@ -28,7 +28,6 @@ import hudson.model.Fingerprint;
 import java.io.IOException;
 import javax.annotation.CheckForNull;
 import javax.annotation.Nonnull;
-import jenkins.model.FingerprintFacet;
 import org.jenkinsci.plugins.docker.commons.fingerprint.DockerFingerprintFacet;
 import org.jenkinsci.plugins.docker.traceability.util.FingerprintsHelper;
 

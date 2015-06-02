@@ -36,6 +36,9 @@ import javax.annotation.CheckForNull;
 import javax.annotation.Nonnull;
 import org.apache.commons.lang.StringUtils;
 import org.jenkinsci.plugins.docker.commons.fingerprint.DockerFingerprints;
+import org.jenkinsci.plugins.docker.traceability.DockerTraceabilityPlugin;
+import org.jenkinsci.plugins.docker.traceability.DockerTraceabilityPluginConfiguration;
+import org.jenkinsci.plugins.docker.traceability.DockerTraceabilityPluginTest;
 import org.jenkinsci.plugins.docker.traceability.fingerprint.DockerContainerRecord;
 import org.jenkinsci.plugins.docker.traceability.fingerprint.DockerDeploymentFacet;
 import org.jenkinsci.plugins.docker.traceability.fingerprint.DockerDeploymentRefFacet;
@@ -47,7 +50,9 @@ import org.jenkinsci.plugins.docker.traceability.util.FingerprintsHelper;
 import static org.junit.Assert.*;
 import org.junit.Rule;
 import org.junit.Test;
+import org.jvnet.hudson.test.Bug;
 import org.jvnet.hudson.test.JenkinsRule;
+import org.kohsuke.stapler.HttpResponse;
 import org.kohsuke.stapler.StaplerRequest;
 import org.kohsuke.stapler.StaplerResponse;
 import org.mockito.Mock;
@@ -103,6 +108,43 @@ public class DockerTraceabilityRootActionTest {
         ObjectMapper mapper= new ObjectMapper();
         final InspectContainerResponse[] parsedData = mapper.readValue(responseJSON, InspectContainerResponse[].class);
         assertEquals(1, parsedData.length);       
+    }
+    
+    @Test
+    @Bug(28656)
+    public void createImageFingerprintsOnDemand() throws Exception {
+        // Read data from resources
+        String inspectData = JSONSamples.inspectContainerData.readString();
+        InspectContainerResponse inspectResponse = JSONSamples.inspectContainerData.
+                readObject(InspectContainerResponse[].class)[0];
+        final String containerId = inspectResponse.getId();
+        final String imageId = inspectResponse.getImageId();
+        
+        // Retrieve instances
+        final DockerTraceabilityRootAction action = DockerTraceabilityRootAction.getInstance();
+        assertNotNull(action);
+        
+        // Enable automatic fingerprints creation
+        DockerTraceabilityPluginConfiguration config = new DockerTraceabilityPluginConfiguration(true);
+        DockerTraceabilityPluginTest.configure(config);
+        DockerTraceabilityPlugin plugin = DockerTraceabilityPlugin.getInstance();
+        assertTrue(plugin.getConfiguration().isCreateImageFingerprints());
+        
+        // Submit JSON
+        HttpResponse res = action.doSubmitContainerStatus(inspectData, null, null, null, 0, null, null);
+        
+        // Ensure that both container and images have been created with proper facets
+        Fingerprint imageFP = DockerFingerprints.of(imageId);
+        Fingerprint containerFP = DockerFingerprints.of(containerId);
+        assertNotNull(imageFP);
+        assertNotNull(DockerFingerprints.getFacet(imageFP, DockerDeploymentRefFacet.class));
+        assertNotNull(containerFP);
+        assertNotNull(DockerFingerprints.getFacet(containerFP, DockerDeploymentFacet.class));
+        
+        // Check original references - Docker Traceability Manager should create runs
+        assertNotNull(imageFP.getOriginal().getJob());
+        assertNotNull(containerFP.getOriginal().getJob());
+        
     }
     
     /**
