@@ -31,7 +31,7 @@
   <h2>
     ${%Image info}
   </h2>
-  The information below has been received on <docker:eventTime time="${it.reportTimestamp}"/>.
+  The information below has been received on <docker:eventTime time="${it.reportTimeInSeconds}"/>.
   <ul>
     <li>${%Name}: &quot;${it.imageName}&quot;</li>
     <li>${%ID}: ${info.id}</li>

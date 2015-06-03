@@ -41,7 +41,11 @@ import org.jenkinsci.plugins.docker.traceability.util.FingerprintsHelper;
  */
 public class DockerInspectImageFacet extends DockerFingerprintFacet {
     
-    private long reportTimestamp;
+    /**
+     * {@link #data} submission time.
+     * Format: seconds since January 1, 1970, 00:00:00 GMT
+     */
+    private long reportTimeInSeconds;
     private @CheckForNull String imageName;
     private InspectImageResponse data;
     
@@ -49,7 +53,7 @@ public class DockerInspectImageFacet extends DockerFingerprintFacet {
            @Nonnull InspectImageResponse data, @Nonnull String imageName) {
         super(fingerprint, timestamp);  
         this.data = data;
-        this.reportTimestamp = timestamp;
+        this.reportTimeInSeconds = timestamp;
         this.imageName = hudson.Util.fixEmpty(imageName);
     } 
 
@@ -70,28 +74,39 @@ public class DockerInspectImageFacet extends DockerFingerprintFacet {
      * Time, when the latest report has been submitted.
      * @return The time is specified in seconds since January 1, 1970, 00:00:00 GMT
      */
-    public long getReportTimestamp() {
-        return reportTimestamp;
+    public long getReportTimeInSeconds() {
+        return reportTimeInSeconds;
     }
     
-    private void updateData(@Nonnull InspectImageResponse data, long timestamp,
+    private void updateData(@Nonnull InspectImageResponse data, long reportTimeInSeconds,
             @CheckForNull String imageName) throws IOException {
-        if (timestamp > reportTimestamp) {
+        if (reportTimeInSeconds > reportTimeInSeconds) {
             this.data = data;
-            this.reportTimestamp = timestamp;         
+            this.reportTimeInSeconds = reportTimeInSeconds;         
         }
         this.imageName = hudson.Util.fixEmpty(imageName);
     }
     
-    public static void updateData(@Nonnull Fingerprint fingerprint, long timestamp, 
+    /**
+     * Updates the facet by a new report.
+     * The submission will be ignored if the current {@link #reportTimeInSeconds} is 
+     * greater than the submitted one,
+     * @param fingerprint Fingerprint to be updated
+     * @param reportTimeInSeconds Report generation time.
+     *      The time is specified in seconds since January 1, 1970, 00:00:00 GMT
+     * @param data Report data from &quot;docker inspect image&quot; output
+     * @param imageName Optional name of the image
+     * @throws IOException Fingerprint save error
+     */
+    public static void updateData(@Nonnull Fingerprint fingerprint, long reportTimeInSeconds, 
             @Nonnull InspectImageResponse data, @CheckForNull String imageName) throws IOException {       
         DockerInspectImageFacet facet = FingerprintsHelper.getFacet(fingerprint, 
                 DockerInspectImageFacet.class);
         if (facet == null) {
-            facet = new DockerInspectImageFacet(fingerprint, timestamp, data, imageName);
+            facet = new DockerInspectImageFacet(fingerprint, reportTimeInSeconds, data, imageName);
             fingerprint.getFacets().add(facet);
         } else {
-           facet.updateData(data, timestamp, imageName);
+           facet.updateData(data, reportTimeInSeconds, imageName);
         }
         fingerprint.save();
     }
