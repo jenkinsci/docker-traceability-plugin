@@ -222,7 +222,7 @@ public class DockerTraceabilityRootAction implements RootAction, SearchableModel
      * @param status Optional status of the container. 
      *      By default, an artificial {@link DockerEventType#NONE} will be used.    
      * @param time Optional time when the event happened. 
-     *      The time is specified in milliseconds since January 1, 1970, 00:00:00 GMT
+     *      The time is specified in seconds since January 1, 1970, 00:00:00 GMT
      *      Default value - current time
      * @param environment Optional field, which describes the environment
      * @param imageName Optional field, which provides the name of the image
@@ -244,7 +244,7 @@ public class DockerTraceabilityRootAction implements RootAction, SearchableModel
         checkPermission(DockerTraceabilityPlugin.SUBMIT);
         final ObjectMapper mapper = new ObjectMapper();
         final InspectContainerResponse[] inspectContainerResponses = mapper.readValue(inspectData, InspectContainerResponse[].class);
-        final long eventTime = time != 0 ? time : new Date().getTime();
+        final long eventTime = time != 0 ? time : System.currentTimeMillis()/1000;
         final String effectiveHostName = StringUtils.isNotBlank(hostName) ? hostName : "unknown";
         final String effectiveHostId = StringUtils.isNotBlank(hostId) ? hostId : "unknown";
         final String effectiveStatus = StringUtils.isNotBlank(status) 
