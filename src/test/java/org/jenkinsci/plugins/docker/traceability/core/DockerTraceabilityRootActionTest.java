@@ -125,7 +125,7 @@ public class DockerTraceabilityRootActionTest {
         assertNotNull(action);
         
         // Enable automatic fingerprints creation
-        DockerTraceabilityPluginConfiguration config = new DockerTraceabilityPluginConfiguration(true);
+        DockerTraceabilityPluginConfiguration config = new DockerTraceabilityPluginConfiguration(true, false);
         DockerTraceabilityPluginTest.configure(config);
         DockerTraceabilityPlugin plugin = DockerTraceabilityPlugin.getInstance();
         assertTrue(plugin.getConfiguration().isCreateImageFingerprints());

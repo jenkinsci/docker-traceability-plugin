@@ -197,7 +197,9 @@ public class DockerTraceabilityRootAction implements RootAction, SearchableModel
     
     @Override
     public String getIconFileName() {
-        return "/plugin/docker-traceability/images/24x24/docker.png";
+        final DockerTraceabilityPlugin plugin = DockerTraceabilityPlugin.getInstance();
+        return plugin.getConfiguration().isShowRootAction()
+                ? "/plugin/docker-traceability/images/24x24/docker.png" : null;
     }
 
     @Override

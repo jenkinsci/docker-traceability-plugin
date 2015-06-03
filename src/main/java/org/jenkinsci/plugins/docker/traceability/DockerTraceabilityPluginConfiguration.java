@@ -36,13 +36,17 @@ import org.kohsuke.stapler.DataBoundConstructor;
 public class DockerTraceabilityPluginConfiguration implements Describable<DockerTraceabilityPluginConfiguration> {
     
     private static final DockerTraceabilityPluginConfiguration DEFAULT = 
-            new DockerTraceabilityPluginConfiguration(false);
+            new DockerTraceabilityPluginConfiguration(false, false);
             
     private final boolean createImageFingerprints;
+    
+    private final boolean showRootAction;
 
     @DataBoundConstructor
-    public DockerTraceabilityPluginConfiguration(boolean createImageFingerprints) {
+    public DockerTraceabilityPluginConfiguration(boolean createImageFingerprints, 
+            boolean showRootAction) {
         this.createImageFingerprints = createImageFingerprints;
+        this.showRootAction = showRootAction;
     }
     
     @Override
@@ -52,6 +56,14 @@ public class DockerTraceabilityPluginConfiguration implements Describable<Docker
 
     public boolean isCreateImageFingerprints() {
         return createImageFingerprints;
+    }
+
+    /**
+     * Check if Jenkins should display the root action.
+     * @return false by default
+     */
+    public boolean isShowRootAction() {
+        return showRootAction;
     }
     
     /**
