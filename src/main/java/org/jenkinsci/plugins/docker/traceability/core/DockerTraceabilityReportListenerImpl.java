@@ -31,7 +31,6 @@ import hudson.model.Fingerprint;
 import java.io.IOException;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import javax.annotation.CheckForNull;
 import javax.annotation.Nonnull;
 import org.jenkinsci.plugins.docker.commons.fingerprint.DockerFingerprints;
 import org.jenkinsci.plugins.docker.traceability.model.DockerTraceabilityReportListener;
@@ -72,11 +71,10 @@ public class DockerTraceabilityReportListenerImpl extends DockerTraceabilityRepo
                
         // Update containerInfo if available
         final InspectContainerResponse containerInfo = report.getContainer();
-        final @CheckForNull Fingerprint containerFP;
         if (containerInfo != null) {
             final String containerId = containerInfo.getId();
             final String containerName = hudson.Util.fixEmptyAndTrim(containerInfo.getName());
-            containerFP = DockerTraceabilityHelper.make(containerId, containerName);
+            final Fingerprint containerFP = DockerTraceabilityHelper.make(containerId, containerName);
             if (containerFP != null) {
                 DockerDeploymentFacet.addEvent(containerFP, report);
                 DockerDeploymentRefFacet.addRef(imageFP, containerInfo.getId());
