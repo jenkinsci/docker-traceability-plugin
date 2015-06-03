@@ -51,7 +51,6 @@ import org.jenkinsci.plugins.docker.traceability.util.FingerprintsHelper;
 public class DockerTraceabilityHelper {
     
     private final static Logger LOGGER = Logger.getLogger(DockerTraceabilityPlugin.class.getName());
-    private final static String CONTAINER_FP_NAME="<docker-container>";
     
     public static @Nonnull String getImageHash(@Nonnull String imageId) {
         return getFingerprintHash(imageId);
@@ -102,16 +101,21 @@ public class DockerTraceabilityHelper {
     /**
      * Get or create a fingerprint by the specified container ID.
      * @param containerId Full 64-symbol container id. Short forms are not supported.
+     * @param name Optional name of the container. If it is not available,
+     *      the container ID will be used to produce the name
      * @return Fingerprint. null if Jenkins has not been initialized yet
      * @throws IOException Fingerprint loading error
      */
-    public static @CheckForNull Fingerprint make(@Nonnull String containerId) throws IOException {
+    public static @CheckForNull Fingerprint make(@Nonnull String containerId, 
+            @CheckForNull String name) throws IOException {
         final Jenkins jenkins = Jenkins.getInstance();
         if (jenkins == null) {
             return null;
         }
         
-        return jenkins.getFingerprintMap().getOrCreate(null, CONTAINER_FP_NAME, getContainerHash(containerId));
+        return jenkins.getFingerprintMap().getOrCreate(null, 
+                "Container "+(name != null ? name : containerId), 
+                getContainerHash(containerId));
     }
     
     /**
