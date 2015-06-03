@@ -25,6 +25,7 @@ package org.jenkinsci.plugins.docker.traceability.fingerprint;
 
 import com.github.dockerjava.api.command.InspectContainerResponse;
 import com.github.dockerjava.api.model.Event;
+import java.io.Serializable;
 import java.util.Comparator;
 import javax.annotation.CheckForNull;
 import javax.annotation.Nonnull;
@@ -68,7 +69,10 @@ public class DockerContainerRecord {
     /**
      * Compares {@link DockerContainerRecord}s by time
      */
-    public static class TimeComparator implements Comparator<DockerContainerRecord> {
+    public static class TimeComparator implements Comparator<DockerContainerRecord>, Serializable {
+        
+        private static final long serialVersionUID = 1L;
+        
         public int compare(DockerContainerRecord o1, DockerContainerRecord o2) {
             
             final Event event1 = o1.getReport().getEvent();
