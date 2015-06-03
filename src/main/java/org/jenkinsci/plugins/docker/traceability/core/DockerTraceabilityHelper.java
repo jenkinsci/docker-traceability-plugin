@@ -119,6 +119,27 @@ public class DockerTraceabilityHelper {
     }
     
     /**
+     * Get or create a fingerprint by the specified image ID.
+     * @param imageId Full 64-symbol image id. Short forms are not supported.
+     * @param name Optional container name
+     * @param timestamp Timestamp if there is a need to create a new image
+     * @return Fingerprint. null if Jenkins has not been initialized yet
+     * @throws IOException Fingerprint loading error
+     */
+    public static @CheckForNull Fingerprint makeImage(@Nonnull String imageId, 
+            @CheckForNull String name, long timestamp) throws IOException {
+        final Jenkins jenkins = Jenkins.getInstance();
+        if (jenkins == null) {
+            return null;
+        }
+        
+        // TODO: this image is not protected from the fingerprint cleanup thread
+        final Fingerprint fp = jenkins.getFingerprintMap().getOrCreate(
+                null, "Image "+(name != null ? name : imageId), getImageHash(imageId));
+        return fp;
+    }
+    
+    /**
      * Retrieves the last deployment record for the specified container.
      * @param containerId Container Id
      * @return Last registered record. Null if there is no data available
