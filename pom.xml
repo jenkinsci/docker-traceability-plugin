@@ -35,7 +35,7 @@
     </parent>
 
     <artifactId>docker-traceability</artifactId>
-    <version>1.0-beta-3</version>
+    <version>1.0-beta-4-SNAPSHOT</version>
     <packaging>hpi</packaging>
 
     <name>CloudBees Docker Traceability</name>
@@ -52,7 +52,7 @@
         <connection>scm:git:git://git@github.com:jenkinsci/docker-traceability-plugin.git</connection>
         <developerConnection>scm:git:https://github.com/jenkinsci/docker-traceability-plugin.git</developerConnection>
         <url>https://github.com/jenkinsci/docker-traceability-plugin</url>
-        <tag>docker-traceability-1.0-beta-3</tag>
+        <tag>HEAD</tag>
     </scm>
 
     <licenses>
