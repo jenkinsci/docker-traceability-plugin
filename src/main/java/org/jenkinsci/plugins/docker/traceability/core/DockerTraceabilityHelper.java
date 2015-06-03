@@ -131,7 +131,7 @@ public class DockerTraceabilityHelper {
         
         // TODO: this image is not protected from the fingerprint cleanup thread
         final Fingerprint fp = jenkins.getFingerprintMap().getOrCreate(
-                null, "Image "+(name != null ? name : name), getImageHash(imageId));
+                null, "Image "+(name != null ? name : imageId), getImageHash(imageId));
         return fp;
     }
     

@@ -50,6 +50,14 @@ public class DockerTraceabilityPluginConfiguration implements Describable<Docker
         return DESCRIPTOR;
     }
 
+    /**
+     * Controls the behavior of {@link DockerTraceabilityPlugin} on missing parent images.
+     * If enabled, the plugin will create missing image fingerprints for all
+     * submitted reports, hence the plugin starts tracking containers being
+     * created for images without parent image fingerprints.
+     * @return true if {@link DockerTraceabilityPlugin} is allowed to create 
+     *      image fingerprints on-demand. false by default
+     */
     public boolean isCreateImageFingerprints() {
         return createImageFingerprints;
     }
