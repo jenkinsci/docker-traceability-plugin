@@ -242,7 +242,7 @@ public class DockerTraceabilityRootAction implements RootAction, SearchableModel
         checkPermission(DockerTraceabilityPlugin.SUBMIT);
         final ObjectMapper mapper = new ObjectMapper();
         final InspectContainerResponse[] inspectContainerResponses = mapper.readValue(inspectData, InspectContainerResponse[].class);
-        final long eventTime = time != 0 ? time : new Date().getTime()/1000;
+        final long eventTime = time != 0 ? time : System.currentTimeMillis()/1000;
         final String effectiveHostName = StringUtils.isNotBlank(hostName) ? hostName : "unknown";
         final String effectiveHostId = StringUtils.isNotBlank(hostId) ? hostId : "unknown";
         final String effectiveStatus = StringUtils.isNotBlank(status) 
