@@ -26,7 +26,10 @@
 <?jelly escape-by-default='true'?>
 <j:jelly xmlns:j="jelly:core" xmlns:st="jelly:stapler" xmlns:d="jelly:define" xmlns:l="/lib/layout" 
          xmlns:t="/lib/hudson" xmlns:f="/lib/form" xmlns:sl="/hudson/plugins/sidebar_link">
+  <f:entry title="${%showRootAction.title}" field="showRootAction">
+    <f:checkbox checked="${it.showRootAction}"/>
+  </f:entry>
   <f:entry title="${%createImageFingerprints.title}" field="createImageFingerprints">
-        <f:checkbox checked="${it.createImageFingerprints}"/>
-    </f:entry>
+    <f:checkbox checked="${it.createImageFingerprints}"/>
+  </f:entry>
 </j:jelly>

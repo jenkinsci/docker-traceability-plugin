@@ -45,19 +45,23 @@ public class DockerTraceabilityPluginTest {
         // Default value
         assertFalse(plugin.getConfiguration().isCreateImageFingerprints());
         
-        // Round-trip with false
-        DockerTraceabilityPluginConfiguration falseConfig = new DockerTraceabilityPluginConfiguration(false);
-        plugin.configure(falseConfig);
-        assertFalse(plugin.getConfiguration().isCreateImageFingerprints());
-        plugin.load();
-        assertFalse(plugin.getConfiguration().isCreateImageFingerprints());
+        // Round-trip with false/true
+        DockerTraceabilityPluginConfiguration config1 = new DockerTraceabilityPluginConfiguration(false, true);
+        testRoundtrip(config1);
         
-        // Round-trip with true
-        DockerTraceabilityPluginConfiguration trueConfig = new DockerTraceabilityPluginConfiguration(true);
-        plugin.configure(trueConfig);
-        assertTrue(plugin.getConfiguration().isCreateImageFingerprints());
+        // Round-trip with true/false
+        DockerTraceabilityPluginConfiguration config2 = new DockerTraceabilityPluginConfiguration(true, false);
+        testRoundtrip(config2);
+    }
+    
+    private void testRoundtrip(DockerTraceabilityPluginConfiguration config)throws IOException {
+        final DockerTraceabilityPlugin plugin = DockerTraceabilityPlugin.getInstance();
+        plugin.configure(config);
+        assertEquals(config.isCreateImageFingerprints(), plugin.getConfiguration().isCreateImageFingerprints());
+        assertEquals(config.isShowRootAction(), plugin.getConfiguration().isShowRootAction());
         plugin.load();
-        assertTrue(plugin.getConfiguration().isCreateImageFingerprints());
+        assertEquals(config.isCreateImageFingerprints(), plugin.getConfiguration().isCreateImageFingerprints());
+        assertEquals(config.isShowRootAction(), plugin.getConfiguration().isShowRootAction());
     }
     
     /**
