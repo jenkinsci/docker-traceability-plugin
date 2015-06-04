@@ -261,7 +261,7 @@ public class DockerTraceabilityRootAction implements RootAction, SearchableModel
             DockerTraceabilityReport res = new DockerTraceabilityReport(event, hostInfo,
                     inspectContainerResponse, 
                     inspectContainerResponse.getImageId(), effectiveImageName,
-                    new LinkedList<String>(), effectiveEnvironment);
+                    /* InspectImageResponse */ null, new LinkedList<String>(), effectiveEnvironment);
             DockerTraceabilityReportListener.fire(res);
         }
         return HttpResponses.ok();
