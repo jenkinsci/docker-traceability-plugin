@@ -71,11 +71,13 @@ public class DockerTraceabilityReport {
     public DockerTraceabilityReport(@Nonnull Event event, @Nonnull Info hostInfo, 
             @CheckForNull InspectContainerResponse container, 
             @Nonnull String imageId, @CheckForNull String imageName, 
+            @CheckForNull InspectImageResponse image,
             @Nonnull List<String> parents, @CheckForNull String environment) {
         this.event = event;
         this.hostInfo = hostInfo;
         this.container = container;
         this.imageId = imageId;
+        this.image = image;
         this.parents = new ArrayList<String>(parents);
         this.imageName = imageName;
         this.environment = environment;
