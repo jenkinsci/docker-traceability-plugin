@@ -45,6 +45,7 @@
   </h3>
   <ul>  
     <li>${%Base image}: <docker:image id="${report.imageId}"/></li>
+    <li>${%Base image name}: &quot;${report.imageName}&quot;
     <li>${%Parent images}: <docker:parentImages parents="${report.parents}"/></li>
   </ul>
   
