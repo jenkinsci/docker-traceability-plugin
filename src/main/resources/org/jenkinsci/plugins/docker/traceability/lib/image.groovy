@@ -26,6 +26,7 @@ import jenkins.model.Jenkins
 import hudson.model.Fingerprint
 import java.io.IOException
 import org.jenkinsci.plugins.docker.commons.fingerprint.DockerFingerprints
+import org.apache.commons.lang.StringUtils
 
 l=namespace(LayoutTagLib)
 t=namespace("/lib/hudson")
@@ -35,15 +36,17 @@ f=namespace("lib/form")
 st.documentation() {
     text("Renders image by its Id. The rendering relies on fingerprints.")
     st.attribute(name: "id", use: "required") {
-      text("Image Id. Only full 64-symbol IDs are supported") 
+      text("Image Id. Only full 64-symbol IDs are supported. Nulls will be processed as well") 
     }
 }
 
 Fingerprint fp = null;
-try {
-   fp = DockerFingerprints.of(id); 
-} catch (IOException ex) {
-    // Do nothing
+if (StringUtils.isNotBlank(id)) {
+  try {
+     fp = DockerFingerprints.of(id); 
+  } catch (IOException ex) {
+      // Do nothing
+  }
 }
 
 if (fp != null) {

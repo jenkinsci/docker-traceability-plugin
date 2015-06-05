@@ -63,19 +63,34 @@ public class DockerTraceabilityReportListenerImpl extends DockerTraceabilityRepo
     private void processReport(@Nonnull DockerTraceabilityReport report) throws IOException {
         DockerTraceabilityPlugin plugin = DockerTraceabilityPlugin.getInstance();
 
-        // Get fingerprints for the image
-        Fingerprint imageFP = DockerFingerprints.of(report.getImageId());
-        if (imageFP == null && plugin.getConfiguration().isCreateImageFingerprints()) {
-            LOGGER.log(Level.FINE, "Creating a new fingerprint for image {0}", report.getImageId());
-            imageFP = DockerTraceabilityHelper.makeImage(report.getImageId(), 
-                    report.getImageName(), report.getEvent().getTime());
+        String imageId = report.getImageId();
+        if (imageId == null) { // Try to restore imageId by container id
+            String containerId = report.getContainerId();
+            if (containerId != null) {
+                final Fingerprint containerFP = DockerFingerprints.of(containerId);
+                final DockerDeploymentFacet facet = containerFP != null
+                        ? DockerFingerprints.getFacet(containerFP, DockerDeploymentFacet.class)
+                        : null;
+                imageId = facet != null ? facet.getImageId() : null;
+            }
         }
         
-        if (imageFP == null) { // We don't create anything and exit
-            LOGGER.log(Level.FINE, "Cannot get or create a fingerprint for image {0}. "
-                + "Most probably, the image has not been created in Jenkins. Report will be ignored", 
-                    report.getImageId());
-            return;
+        // Get fingerprints for the image
+        Fingerprint imageFP = null;
+        if (imageId != null) {
+            imageFP = DockerFingerprints.of(imageId);
+            if (imageFP == null && plugin.getConfiguration().isCreateImageFingerprints()) {
+                LOGGER.log(Level.FINE, "Creating a new fingerprint for image {0}", report.getImageId());
+                imageFP = DockerTraceabilityHelper.makeImage(imageId, 
+                        report.getImageName(), report.getEvent().getTime());
+            }
+        
+            if (imageFP == null) { // We don't create anything and exit
+                LOGGER.log(Level.FINE, "Cannot get or create a fingerprint for image {0}. "
+                    + "Most probably, the image has not been created in Jenkins. Report will be ignored", 
+                        report.getImageId());
+                return;
+            }
         }
                
         // Update containerInfo if available
@@ -86,7 +101,9 @@ public class DockerTraceabilityReportListenerImpl extends DockerTraceabilityRepo
             final Fingerprint containerFP = DockerTraceabilityHelper.make(containerId, containerName);
             if (containerFP != null) {
                 DockerDeploymentFacet.addEvent(containerFP, report);
-                DockerDeploymentRefFacet.addRef(imageFP, containerInfo.getId());
+                if (imageFP != null) {
+                    DockerDeploymentRefFacet.addRef(imageFP, containerInfo.getId());
+                }
             } else {
                 LOGGER.log(Level.WARNING, "Cannot retrieve the fingerprint for containerId={0}", containerInfo.getId());
             }
@@ -96,7 +113,7 @@ public class DockerTraceabilityReportListenerImpl extends DockerTraceabilityRepo
         
         // Update image facets by a new info if available
         final InspectImageResponse imageInfo = report.getImage();
-        if (imageInfo != null) {
+        if (imageInfo != null && imageFP != null) {
             DockerInspectImageFacet.updateData(imageFP, report.getEvent().getTime(), 
                     imageInfo, report.getImageName());         
         }

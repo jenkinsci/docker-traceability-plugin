@@ -74,9 +74,9 @@ public class DockerAPIReport {
     
     @ExportedBean
     public abstract static class Item {
-        private final String id;
-        private final String name;
-        private final String created;
+        private final @CheckForNull String id;
+        private final @CheckForNull String name;
+        private final @CheckForNull String created;
         private final @CheckForNull FingerprintRef fingerprint;
 
         public Item(String id, String name, String created, @CheckForNull Fingerprint fingerprint) {
@@ -369,12 +369,15 @@ public class DockerAPIReport {
             return null;
         }
         final DockerTraceabilityReport report = lastRecord.getReport();
+        final String imageId = report.getImageId();
         @CheckForNull Fingerprint imageFP = null;
-        try {
-            imageFP = DockerFingerprints.of(report.getImageId());
-        } catch (IOException ex) {
-            // Do nothing
-        } 
+        if (imageId != null) {
+            try {
+                imageFP = DockerFingerprints.of(imageId);
+            } catch (IOException ex) {
+                // Do nothing
+            } 
+        }
         
         final InspectImageResponse inspectImageResponse = report.getImage();
         final InspectContainerResponse inspectContainerResponse = report.getContainer();
@@ -382,7 +385,7 @@ public class DockerAPIReport {
             return null;
         }
         
-        final Image image = new Image(report.getImageId(), report.getImageName(), 
+        final Image image = new Image(imageId, report.getImageName(), 
                 (inspectImageResponse != null) ? inspectImageResponse.getCreated() : "N/A", imageFP);
         final State state = new State(lastStatus, inspectContainerResponse.getState());
         final Container container = new Container(inspectContainerResponse.getId(), inspectContainerResponse.getName(), 

@@ -213,9 +213,9 @@ public class DockerTraceabilityRootActionTest {
         }    
         assertNotNull(action);
         
-        final String id1 = generateContainerId("1");
-        final String id2 = generateContainerId("2");
-        final String id3 = generateContainerId("3");
+        final String id1 = FingerprintTestUtil.generateDockerId("1");
+        final String id2 = FingerprintTestUtil.generateDockerId("2");
+        final String id3 = FingerprintTestUtil.generateDockerId("3");
         
         // Check consistency of create/update commands
         action.addContainerID(id1);
@@ -324,8 +324,5 @@ public class DockerTraceabilityRootActionTest {
         return inspectImageFacet;
     }
             
-    private @Nonnull String generateContainerId(@Nonnull String prefix) {
-        final String src = "cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc";
-        return prefix + StringUtils.substring(src, 0, 64-prefix.length());
-    }
+    
 }

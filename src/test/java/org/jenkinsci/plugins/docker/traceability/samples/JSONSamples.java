@@ -26,6 +26,7 @@ package org.jenkinsci.plugins.docker.traceability.samples;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import java.io.IOException;
+import java.io.InputStream;
 import org.apache.commons.io.IOUtils;
 
 /**
@@ -35,7 +36,15 @@ import org.apache.commons.io.IOUtils;
 public enum JSONSamples {
     
     inspectContainerData,
+    inspectContainerData_emptyImage,
     submitReport;
+
+    private JSONSamples() {
+        InputStream i = JSONSamples.class.getResourceAsStream(getFileName());
+        if (i == null) { // Fail the class initialization
+            throw new IllegalStateException("Cannot find resource " + getFileName());
+        }
+    }
     
     public String getFileName() {
         return this + ".json";

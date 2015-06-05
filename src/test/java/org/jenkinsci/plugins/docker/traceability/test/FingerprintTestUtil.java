@@ -28,8 +28,10 @@ import hudson.model.AbstractProject;
 import hudson.model.Fingerprint;
 import hudson.model.Run;
 import java.io.IOException;
+import javax.annotation.Nonnull;
 import javax.servlet.ServletException;
 import jenkins.model.Jenkins;
+import org.apache.commons.lang.StringUtils;
 import org.jenkinsci.plugins.docker.commons.fingerprint.DockerFingerprints;
 import org.kohsuke.stapler.QueryParameter;
 import org.kohsuke.stapler.StaplerRequest;
@@ -78,5 +80,15 @@ public class FingerprintTestUtil {
         
         DockerFingerprints.addFromFacet(null,imageId, latest);
         rsp.sendRedirect2(j.getRootUrl());
+    }
+    
+    /**
+     * Generates 64-symbol id with the specified prefix;
+     * @param prefix Prefix to be retrieved
+     * @return Generated ID (works for container and image).
+     */
+    public static @Nonnull String generateDockerId(@Nonnull String prefix) {
+        final String src = "cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc";
+        return prefix + StringUtils.substring(src, 0, 64-prefix.length());
     }
 }
