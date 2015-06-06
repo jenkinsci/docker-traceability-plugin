@@ -24,10 +24,12 @@
 package org.jenkinsci.plugins.docker.traceability.core;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.SerializationFeature;
 import com.github.dockerjava.api.command.InspectContainerResponse;
 import com.github.dockerjava.api.command.InspectImageResponse;
 import com.github.dockerjava.api.model.Event;
 import com.github.dockerjava.api.model.Info;
+
 import hudson.BulkChange;
 import hudson.Extension;
 import hudson.XmlFile;
@@ -44,6 +46,7 @@ import hudson.search.SearchIndex;
 import hudson.search.SearchIndexBuilder;
 import hudson.search.SearchableModelObject;
 import hudson.security.Permission;
+
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
@@ -58,11 +61,14 @@ import java.util.SortedSet;
 import java.util.TreeSet;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+
 import javax.annotation.CheckForNull;
 import javax.annotation.Nonnull;
 import javax.servlet.ServletException;
+
 import jenkins.model.Jenkins;
 import static jenkins.model.Jenkins.XSTREAM;
+
 import org.acegisecurity.AccessDeniedException;
 import org.apache.commons.lang.StringUtils;
 import org.jenkinsci.plugins.docker.commons.fingerprint.DockerFingerprints;
@@ -579,6 +585,7 @@ public class DockerTraceabilityRootAction implements RootAction, SearchableModel
             @Override
             public void generateResponse(StaplerRequest req, StaplerResponse rsp, Object node) throws IOException, ServletException {
                 ObjectMapper mapper = new ObjectMapper(); 
+                mapper.enable(SerializationFeature.INDENT_OUTPUT);
                 rsp.setContentType("application/json;charset=UTF-8");
                 mapper.writeValue(rsp.getWriter(), item);
             }
