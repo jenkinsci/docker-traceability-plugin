@@ -1,0 +1,180 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+
+    The MIT License (MIT)
+
+    Copyright (c) 2015, CloudBees, Inc.
+
+    Permission is hereby granted, free of charge, to any person obtaining a copy
+    of this software and associated documentation files (the "Software"), to deal
+    in the Software without restriction, including without limitation the rights
+    to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+    copies of the Software, and to permit persons to whom the Software is
+    furnished to do so, subject to the following conditions:
+
+    The above copyright notice and this permission notice shall be included in
+    all copies or substantial portions of the Software.
+
+    THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+    IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+    FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+    AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+    LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+    OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
+    THE SOFTWARE.
+
+-->
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+
+    <parent>
+        <groupId>org.jenkins-ci.plugins</groupId>
+        <artifactId>docker-traceability-parent</artifactId>
+        <version>1.0-beta-4-SNAPSHOT</version>
+        <relativePath>../pom.xml</relativePath>
+    </parent>
+
+    <artifactId>docker-traceability</artifactId>
+    <version>1.0-beta-4-SNAPSHOT</version>
+    <packaging>hpi</packaging>
+
+    <name>CloudBees Docker Traceability</name>
+    <description>Provides an ability to trace server deployments via fingerprints</description>
+    <url>http://wiki.jenkins-ci.org/display/JENKINS/CloudBees+Docker+Traceability</url>
+    <inceptionYear>2015</inceptionYear>
+
+    <properties>
+        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+        <maven-release-plugin.version>2.5.1</maven-release-plugin.version>
+    </properties>
+
+    <scm>
+        <connection>scm:git:git://git@github.com:jenkinsci/docker-traceability-plugin.git</connection>
+        <developerConnection>scm:git:https://github.com/jenkinsci/docker-traceability-plugin.git</developerConnection>
+        <url>https://github.com/jenkinsci/docker-traceability-plugin</url>
+        <tag>HEAD</tag>
+    </scm>
+
+    <licenses>
+           <license>
+                   <name>MIT</name>
+                   <url>http://opensource.org/licenses/MIT</url>
+                   <distribution>repo</distribution>
+           </license>
+    </licenses>
+
+    <build>
+      <pluginManagement>
+        <!--  override parents so we can compile with 1.7 -->
+        <plugins>
+          <plugin>
+            <!-- make sure our code doesn't have 1.8 dependencies except where we know it -->
+            <!-- we depend on docker-java that uses 1.7 even though we don't require it. -->
+            <groupId>org.codehaus.mojo</groupId>
+            <artifactId>animal-sniffer-maven-plugin</artifactId>
+            <version>1.14</version>
+            <executions>
+              <execution>
+                <goals>
+                  <goal>check</goal>
+                </goals>
+                <phase>test</phase>
+              </execution>
+            </executions>
+            <configuration>
+              <!-- outside <execution> so that we can run 'animal-sniffer:check' from the top without breaking anything  -->
+              <signature>
+                <groupId>org.codehaus.mojo.signature</groupId>
+                <artifactId>java17</artifactId>
+                <version>1.0</version>
+              </signature>
+            </configuration>
+          </plugin>
+          <plugin>
+            <groupId>org.jenkins-ci.tools</groupId>
+            <artifactId>maven-hpi-plugin</artifactId>
+            <version>${hpi.plugin.version}</version>
+            <dependencies>
+              <dependency>
+                <groupId>com.google.guava</groupId>
+                <artifactId>guava</artifactId>
+                <version>${guava.version}</version>
+              </dependency>  
+              <dependency>
+                <groupId>org.kohsuke.stapler</groupId>
+                <artifactId>stapler</artifactId>
+                <version>${stapler.version}</version>
+              </dependency>               
+            </dependencies>
+            <configuration>
+              <dependentWarExcludes>org.apache.httpcomponents:*,com.github.dockerjava*:*,com.google.guava*</dependentWarExcludes>
+              <archive>
+                <manifestEntries>
+                  <Mask-Classes>com.google.common</Mask-Classes>
+                  <Mask-Classes>com.github.dockerjava.</Mask-Classes>        
+                </manifestEntries>
+              </archive>
+              <maskClasses>com.google.common.</maskClasses>
+              <maskClasses>com.github.dockerjava.</maskClasses>
+            </configuration>
+          </plugin>
+        </plugins>
+      </pluginManagement>
+
+        <plugins>
+            <plugin>
+                <groupId>com.mycila</groupId>
+                <artifactId>license-maven-plugin</artifactId>
+                <version>2.11</version>
+                <configuration>
+                    <header>LICENSE.txt</header>
+                    <mapping>
+                        <jelly>XML_STYLE</jelly>
+                    </mapping>
+                    <skipExistingHeaders>true</skipExistingHeaders>
+                </configuration>
+            </plugin>
+            <plugin>
+                <artifactId>maven-enforcer-plugin</artifactId>
+                <version>1.0.1</version>
+                <executions>
+                    <execution>
+                        <id>enforce-jdk</id>
+                        <goals>
+                            <goal>enforce</goal>
+                        </goals>
+                        <configuration>
+                            <rules>
+                                <requireJavaVersion>
+                                    <version>[1.7,)</version>
+                                    <message>Build with Java 1.7 or later, docker-java uses 1.7 APIs and bytecode.</message>
+                                </requireJavaVersion>
+                            </rules>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
+        </plugins>
+    </build>
+
+    <dependencies>
+        <dependency>
+            <groupId>org.jenkins-ci.plugins</groupId>
+            <artifactId>docker-commons</artifactId>
+            <version>1.0</version>
+        </dependency>
+        <dependency>
+          <groupId>org.jenkins-ci.plugins</groupId>
+          <artifactId>docker-java-shaded-traceability</artifactId>
+          <version>${project.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.mockito</groupId>
+            <artifactId>mockito-all</artifactId>
+            <version>1.9.5</version>
+            <scope>test</scope>
+            <type>jar</type>
+        </dependency>
+    </dependencies>
+
+</project>
