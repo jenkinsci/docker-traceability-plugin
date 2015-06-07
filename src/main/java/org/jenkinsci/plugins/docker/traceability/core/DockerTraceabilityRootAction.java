@@ -346,16 +346,16 @@ public class DockerTraceabilityRootAction implements RootAction, SearchableModel
     //TODO: filtering by container ID, imageID, containerName, imageName, hostName, hostID, environment
     /**
      * Retrieves the latest container status via API.
-     * The output will be retrieved in JSON. Supports filers. Missing 
-     * &quot;since&quot; and &quot;until&quot; 
+     * Supports filers. Missing &quot;since&quot; and &quot;until&quot; 
      * @param id ID of the container, for which the info should be retrieved.
      *    Short container IDs are not supported.
+     * @param format Format used in the response
      * @throws IOException Processing error
      * @throws ServletException Servlet error
-     * @return Raw JSON output compatible with docker inspect
+     * @return Response available in different formats, including a JSON output compatible with docker inspect
      */
-    public HttpResponse doRawContainerInfo(@QueryParameter(required = true) String id) 
-            throws IOException, ServletException {     
+    public HttpResponse doRawContainerInfo(@QueryParameter(required = true) String id, @QueryParameter(required = false) final String format)
+            throws IOException, ServletException {
         checkPermission(DockerTraceabilityPlugin.READ_DETAILS);
         
         //TODO: check containerID format
@@ -371,7 +371,7 @@ public class DockerTraceabilityRootAction implements RootAction, SearchableModel
         
         // Return raw JSON in the response
         InspectContainerResponse[] out = {inspectInfo};
-        return toJSONResponse(out);
+        return toFormattedResponse(out, format);
     }  
     
     //TODO: More filtering
@@ -385,15 +385,17 @@ public class DockerTraceabilityRootAction implements RootAction, SearchableModel
      *      If the value equals to 0, the filter will be ignored (default in {@link QueryParameter}).
      * @param until End time. 
      *      If the value equals to 0, the filter will be ignored (default in {@link QueryParameter}).
+     * @param format Format used in the response.
      * @throws IOException Processing error
      * @throws ServletException Servlet error
-     * @return Response containing the output JSON. may be an error if something breaks.
+     * @return Response available in different formats. may be an error if something breaks.
      */
     public HttpResponse doQueryContainer( 
             @QueryParameter(required = true) String id,
             @QueryParameter(required = false) String mode,
             @QueryParameter(required = false) long since,
-            @QueryParameter(required = false) long until) 
+            @QueryParameter(required = false) long until,
+            @QueryParameter(required = false) String format)
             throws IOException, ServletException {     
         checkPermission(DockerTraceabilityPlugin.READ_DETAILS);
         
@@ -444,21 +446,23 @@ public class DockerTraceabilityRootAction implements RootAction, SearchableModel
             }
         }
         
-        // Return raw JSON in the response
-        return toJSONResponse(result);
+        return toFormattedResponse(result, format);
     }  
     
     /**
      * Retrieves the latest raw status via API.
-     * The output will be retrieved in JSON.
+     *
      * @param id ID of the image, for which the info should be retrieved.
      *    Short container IDs are not supported.
+     * @param format Format used in the output response.
+     *
      * @throws IOException Processing error
      * @throws ServletException Servlet error
-     * @return {@link HttpResponse}
+     *
+     * @return Response available in different formats {@link HttpResponse}
      */
-    public HttpResponse doRawImageInfo(@QueryParameter(required = true) String id) 
-            throws IOException, ServletException {     
+    public HttpResponse doRawImageInfo(@QueryParameter(required = true) String id, @QueryParameter(required = true) String format)
+            throws IOException, ServletException {
         checkPermission(DockerTraceabilityPlugin.READ_DETAILS);
         
         final InspectImageResponse report = DockerTraceabilityHelper.getLastInspectImageResponse(id);
@@ -466,9 +470,8 @@ public class DockerTraceabilityRootAction implements RootAction, SearchableModel
             return HttpResponses.error(404, "No info available for the imageId=" + id);
         }
         
-        // Return raw JSON in the response
         InspectImageResponse[] out = {report};
-        return toJSONResponse(out);
+        return toFormattedResponse(out, format);
     } 
     
     /**
@@ -569,19 +572,62 @@ public class DockerTraceabilityRootAction implements RootAction, SearchableModel
             LOGGER.log(Level.SEVERE, "Failed to load the configuration from config path = "+config,e);
         }
     }
-    
+
     /**
-     * Serves the JSON response.
-     * @param item Data to be serialized to JSON
-     * @return HTTP response with application/json MIME type
+     * Represents the different response formats (JSON, pretty JSON, XML).
      */
-    private static HttpResponse toJSONResponse(final Object item) {
+    private enum ResponseFormat {
+        JSON,
+        PRETTYJSON,
+        XML;
+
+        private static final ResponseFormat DEFAULT = JSON;
+
+        public static ResponseFormat fromString (final String format) {
+            if (format == null) {
+                return DEFAULT;
+            }
+            if (format.equals("json")) {
+                return JSON;
+            } else if (format.equals("json-pretty")) {
+                return PRETTYJSON;
+            } else if (format.equals("xml")) {
+                 // Related to https://issues.jenkins-ci.org/browse/JENKINS-28727
+                return DEFAULT;
+            } else {
+                return DEFAULT;
+            }
+        }
+    }
+
+    /**
+     * Serves the response and manages its output format in the response.
+     *
+     * @param item Data to be serialized
+     * @param format Format used in the response
+     *
+     * @return HTTP response with MIME type
+     */
+    private static HttpResponse toFormattedResponse(final Object item, final String format) {
         return new HttpResponse() {
             @Override
             public void generateResponse(StaplerRequest req, StaplerResponse rsp, Object node) throws IOException, ServletException {
-                ObjectMapper mapper = new ObjectMapper(); 
-                mapper.enable(SerializationFeature.INDENT_OUTPUT);
-                rsp.setContentType("application/json;charset=UTF-8");
+                ObjectMapper mapper = new ObjectMapper();
+                ResponseFormat responseFormat = ResponseFormat.fromString(format);
+                switch (responseFormat) {
+                    case JSON:
+                        rsp.setContentType("application/json;charset=UTF-8");
+                        break;
+                    case PRETTYJSON:
+                        mapper.enable(SerializationFeature.INDENT_OUTPUT);
+                        rsp.setContentType("application/json;charset=UTF-8");
+                    case XML:
+                        // Related to https://issues.jenkins-ci.org/browse/JENKINS-28727
+                        break;
+                    default:
+                        rsp.setContentType("application/json;charset=UTF-8");
+                        break;
+                }
                 mapper.writeValue(rsp.getWriter(), item);
             }
         };
