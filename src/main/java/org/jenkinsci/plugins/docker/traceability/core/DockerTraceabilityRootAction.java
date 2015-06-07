@@ -576,26 +576,43 @@ public class DockerTraceabilityRootAction implements RootAction, SearchableModel
      * Represents the different response formats (JSON, pretty JSON, XML).
      */
     private enum ResponseFormat {
-        JSON,
-        PRETTYJSON,
-        XML;
+        JSON("json", "application/json;charset=UTF-8"),
+        PRETTYJSON("json-pretty", "application/json;charset=UTF-8"),
+        XML("xml", "application/xml;charset=UTF-8");
+
+        private String alias;
+
+        private String contentType;
 
         private static final ResponseFormat DEFAULT = JSON;
 
-        public static ResponseFormat fromString (final String format) {
-            if (format == null) {
+        private ResponseFormat(final String alias, final String contentType) {
+            this.alias = alias;
+            this.contentType = contentType;
+        }
+
+        public static ResponseFormat fromAlias(final String alias) {
+            if (alias == null) {
                 return DEFAULT;
             }
-            if (format.equals("json")) {
+            if (alias.equals("json")) {
                 return JSON;
-            } else if (format.equals("json-pretty")) {
+            } else if (alias.equals("json-pretty")) {
                 return PRETTYJSON;
-            } else if (format.equals("xml")) {
+            } else if (alias.equals("xml")) {
                  // Related to https://issues.jenkins-ci.org/browse/JENKINS-28727
-                return DEFAULT;
+                throw new IllegalStateException("Unsupported format: " + alias);
             } else {
-                return DEFAULT;
+                throw new IllegalStateException("Unsupported format: " + alias);
             }
+        }
+
+        public String getAlias() {
+            return alias;
+        }
+
+        public String getContentType() {
+            return contentType;
         }
     }
 
@@ -612,20 +629,10 @@ public class DockerTraceabilityRootAction implements RootAction, SearchableModel
             @Override
             public void generateResponse(StaplerRequest req, StaplerResponse rsp, Object node) throws IOException, ServletException {
                 ObjectMapper mapper = new ObjectMapper();
-                ResponseFormat responseFormat = ResponseFormat.fromString(format);
-                switch (responseFormat) {
-                    case JSON:
-                        rsp.setContentType("application/json;charset=UTF-8");
-                        break;
-                    case PRETTYJSON:
-                        mapper.enable(SerializationFeature.INDENT_OUTPUT);
-                        rsp.setContentType("application/json;charset=UTF-8");
-                    case XML:
-                        // Related to https://issues.jenkins-ci.org/browse/JENKINS-28727
-                        break;
-                    default:
-                        rsp.setContentType("application/json;charset=UTF-8");
-                        break;
+                ResponseFormat responseFormat = ResponseFormat.fromAlias(format);
+                rsp.setContentType(responseFormat.getContentType());
+                if (responseFormat.equals(ResponseFormat.PRETTYJSON)) {
+                    mapper.enable(SerializationFeature.INDENT_OUTPUT);
                 }
                 mapper.writeValue(rsp.getWriter(), item);
             }
