@@ -369,7 +369,6 @@ public class DockerTraceabilityRootAction implements RootAction, SearchableModel
             return HttpResponses.error(500, "Cannot retrieve the container's status"); 
         }
         
-        // Return raw JSON in the response
         InspectContainerResponse[] out = {inspectInfo};
         return toFormattedResponse(out, format);
     }  
@@ -461,7 +460,7 @@ public class DockerTraceabilityRootAction implements RootAction, SearchableModel
      *
      * @return Response available in different formats {@link HttpResponse}
      */
-    public HttpResponse doRawImageInfo(@QueryParameter(required = true) String id, @QueryParameter(required = true) String format)
+    public HttpResponse doRawImageInfo(@QueryParameter(required = true) String id, @QueryParameter(required = false) String format)
             throws IOException, ServletException {
         checkPermission(DockerTraceabilityPlugin.READ_DETAILS);
         
