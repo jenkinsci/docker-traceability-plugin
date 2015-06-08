@@ -31,8 +31,8 @@ import java.util.SortedSet;
 import java.util.TreeSet;
 import javax.annotation.CheckForNull;
 import javax.annotation.Nonnull;
-import jenkins.model.FingerprintFacet;
 import org.jenkinsci.plugins.docker.commons.fingerprint.DockerFingerprintFacet;
+import org.jenkinsci.plugins.docker.commons.fingerprint.DockerFingerprints;
 import org.jenkinsci.plugins.docker.traceability.core.DockerTraceabilityHelper;
 import org.jenkinsci.plugins.docker.traceability.model.DockerEventType;
 import org.jenkinsci.plugins.docker.traceability.model.DockerTraceabilityReport;
@@ -46,7 +46,7 @@ import org.jenkinsci.plugins.docker.traceability.util.FingerprintsHelper;
  * @author Oleg Nenashev
  */
 public class DockerDeploymentFacet extends DockerFingerprintFacet {
-       
+        
     private final SortedSet<DockerContainerRecord> deploymentRecords 
             = new TreeSet<DockerContainerRecord>(new DockerContainerRecord.TimeComparator());
             
@@ -69,6 +69,22 @@ public class DockerDeploymentFacet extends DockerFingerprintFacet {
 
     public synchronized @CheckForNull DockerContainerRecord getLatest() {
         return (deploymentRecords.isEmpty()) ? null : deploymentRecords.last();
+    }
+
+    /**
+     * Get Image ID, for which the container has been created.
+     * This method is required, because the imageId may be missing in particular records.
+     * A common case - DIE event for a container with the deleted image.
+     * @return Commonly a {@code non-null} value, but may be {@code null} in corner-cases
+     */
+    public synchronized @CheckForNull String getImageId() {
+        for (DockerContainerRecord record : deploymentRecords) {
+            String imageId = record.getReport().getImageId();
+            if (imageId != null) {
+                return imageId;
+            }
+        }
+        return null;
     }
     
     /**
@@ -107,11 +123,9 @@ public class DockerDeploymentFacet extends DockerFingerprintFacet {
     
     public static @Nonnull DockerDeploymentFacet getOrCreate(@Nonnull Fingerprint fingerprint)
             throws IOException {  
-        // Try to find an existing facet
-        for ( FingerprintFacet facet : fingerprint.getFacets()) {
-            if (facet instanceof DockerDeploymentFacet) {
-                return (DockerDeploymentFacet) facet;
-            }
+        DockerDeploymentFacet res = DockerFingerprints.getFacet(fingerprint, DockerDeploymentFacet.class);
+        if (res != null) {
+            return res;
         }
         
         // Create new one

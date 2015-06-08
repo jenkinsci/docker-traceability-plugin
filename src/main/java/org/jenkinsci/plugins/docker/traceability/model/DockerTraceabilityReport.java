@@ -34,24 +34,25 @@ import java.util.Collections;
 import java.util.List;
 import javax.annotation.CheckForNull;
 import javax.annotation.Nonnull;
+import org.apache.commons.lang.StringUtils;
 
 @JsonIgnoreProperties(ignoreUnknown=true)
 public class DockerTraceabilityReport {
 
     @JsonProperty
-    private Event event;
+    private @Nonnull Event event;
     
     @JsonProperty
-    private Info hostInfo;
+    private @Nonnull Info hostInfo;
     
     @JsonProperty(required = false)
-    private InspectContainerResponse container;
+    private @CheckForNull InspectContainerResponse container;
     
     @JsonProperty(required = false)
-    private InspectImageResponse image;
+    private @CheckForNull InspectImageResponse image;
     
-    @JsonProperty
-    private String imageId;
+    @JsonProperty(required = false)
+    private @CheckForNull String imageId;
     
     @JsonProperty(required = false)
     private @CheckForNull String imageName;
@@ -60,7 +61,7 @@ public class DockerTraceabilityReport {
     private @CheckForNull String environment;
     
     @JsonProperty
-    private List<String> parents;
+    private @Nonnull List<String> parents;
       
     /**
      * Stub constructor for deserialization purposes.
@@ -70,7 +71,7 @@ public class DockerTraceabilityReport {
     
     public DockerTraceabilityReport(@Nonnull Event event, @Nonnull Info hostInfo, 
             @CheckForNull InspectContainerResponse container, 
-            @Nonnull String imageId, @CheckForNull String imageName, 
+            @CheckForNull String imageId, @CheckForNull String imageName, 
             @CheckForNull InspectImageResponse image,
             @Nonnull List<String> parents, @CheckForNull String environment) {
         this.event = event;
@@ -116,8 +117,53 @@ public class DockerTraceabilityReport {
         return image;
     }
     
-    public @Nonnull String getImageId() {
-        return imageId;
+    /**
+     * Gets ID of the image.
+     * The method will try to retrieve the ID from several places in the report.
+     * @return Full 64-symbol IDs are supported. May be null in corner cases
+     * when the image info becomes deleted before the report submission.
+     */
+    public @CheckForNull String getImageId() {
+        if (imageId != null) {
+            return imageId;
+        }
+        
+        // Try InspectImageResponse
+        if (image != null) {
+            final String idFromImage = image.getId();
+            if (StringUtils.isNotBlank(idFromImage)) {
+                return idFromImage;
+            }
+        }
+        
+        // Try InspectContainerResponse
+        if (container != null) {
+            final String idFromContainer = container.getImageId();
+            if (StringUtils.isNotBlank(idFromContainer)) {
+                return idFromContainer;
+            }
+        }
+        
+        // TODO: Try extracting from event, which may have the data in some cases?
+        return null;
+    }
+    
+    /**
+     * Gets ID of the container.
+     * The method will try to retrieve the ID from several places in the report.
+     * @return Full 64-symbol IDs are supported. May be null if there is no 
+     * data in the request.
+     */
+    public @CheckForNull String getContainerId() {
+        if (container != null) {
+            final String idFromContainer = container.getId();
+            if (StringUtils.isNotBlank(idFromContainer)) {
+                return idFromContainer;
+            }
+        }
+        
+        // TODO: Try other possible sources like event?
+        return null;
     }
 
     /**

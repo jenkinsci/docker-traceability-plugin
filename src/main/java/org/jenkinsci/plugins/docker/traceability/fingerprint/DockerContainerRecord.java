@@ -62,8 +62,9 @@ public class DockerContainerRecord {
         return (container != null) ? DockerTraceabilityHelper.getContainerHash(container.getId()) : null;
     }
     
-    public @Nonnull String getImageFingerprintHash() {
-        return DockerTraceabilityHelper.getImageHash(report.getImageId());
+    public @CheckForNull String getImageFingerprintHash() {
+        final String imageId = report.getImageId();
+        return imageId != null ? DockerTraceabilityHelper.getImageHash(imageId) : null;
     }
     
     /**
