@@ -611,7 +611,7 @@ public class DockerTraceabilityRootAction implements RootAction, SearchableModel
             return contentType;
         }
 
-        public Boolean getPretty() {
+        public boolean getPretty() {
             return pretty;
         }
     }
