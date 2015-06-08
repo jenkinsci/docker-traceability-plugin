@@ -11,15 +11,11 @@
   <version>1.0-beta-5-SNAPSHOT</version>
   <name>docker-java shaded for CloudBees Docker Traceability</name>
 
-  <properties>
-    <docker-java.version>1.3.0</docker-java.version>
-  </properties>
-
   <dependencies>
     <dependency>
-      <groupId>com.github.docker-java</groupId>
-      <artifactId>docker-java</artifactId>
-      <version>${docker-java.version}</version>
+      <groupId>org.jenkins-ci.plugins</groupId>
+      <artifactId>docker-traceability-api</artifactId>
+      <version>${project.version}</version>
       <scope>compile</scope>
     </dependency>
   </dependencies>
@@ -46,6 +42,7 @@
               <include>org.glassfish*:*</include>
               <include>org.apache.httpcomponents*:*</include>
               <include>com.github.docker-java*:*</include>
+              <include>org.jenkins-ci.plugins:docker-traceability-api</include>
               <include>com.google.guava:*</include>
             </includes>
           </artifactSet>

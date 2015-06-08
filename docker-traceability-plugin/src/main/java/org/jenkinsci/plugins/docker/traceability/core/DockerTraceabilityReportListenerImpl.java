@@ -32,7 +32,7 @@ import java.util.logging.Logger;
 import javax.annotation.Nonnull;
 import org.jenkinsci.plugins.docker.commons.fingerprint.DockerFingerprints;
 import org.jenkinsci.plugins.docker.traceability.model.DockerTraceabilityReportListener;
-import org.jenkinsci.plugins.docker.traceability.model.DockerTraceabilityReport;
+import org.jenkinsci.plugins.docker.traceability.api.DockerTraceabilityReport;
 import org.jenkinsci.plugins.docker.traceability.DockerTraceabilityPlugin;
 import org.jenkinsci.plugins.docker.traceability.dockerjava.api.command.InspectContainerResponse;
 import org.jenkinsci.plugins.docker.traceability.dockerjava.api.command.InspectImageResponse;

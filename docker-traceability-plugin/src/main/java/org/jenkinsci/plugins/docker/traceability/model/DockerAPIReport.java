@@ -33,6 +33,7 @@ import java.util.Map;
 import javax.annotation.CheckForNull;
 import javax.annotation.Nonnull;
 import org.jenkinsci.plugins.docker.commons.fingerprint.DockerFingerprints;
+import org.jenkinsci.plugins.docker.traceability.api.DockerTraceabilityReport;
 import org.jenkinsci.plugins.docker.traceability.core.DockerTraceabilityHelper;
 import org.jenkinsci.plugins.docker.traceability.dockerjava.api.command.InspectContainerResponse;
 import org.jenkinsci.plugins.docker.traceability.dockerjava.api.command.InspectContainerResponse.ContainerState;

@@ -21,14 +21,15 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  * THE SOFTWARE.
  */
-package org.jenkinsci.plugins.docker.traceability.model;
+package org.jenkinsci.plugins.docker.traceability.api;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
-import org.jenkinsci.plugins.docker.traceability.dockerjava.api.command.InspectContainerResponse;
-import org.jenkinsci.plugins.docker.traceability.dockerjava.api.command.InspectImageResponse;
-import org.jenkinsci.plugins.docker.traceability.dockerjava.api.model.Event;
-import org.jenkinsci.plugins.docker.traceability.dockerjava.api.model.Info;import java.util.ArrayList;
+import com.github.dockerjava.api.command.InspectContainerResponse;
+import com.github.dockerjava.api.command.InspectImageResponse;
+import com.github.dockerjava.api.model.Event;
+import com.github.dockerjava.api.model.Info;
+import java.util.ArrayList;
 import java.util.Collections;
 
 import java.util.List;

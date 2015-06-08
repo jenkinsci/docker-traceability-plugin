@@ -33,6 +33,7 @@ import java.io.IOException;
 import javax.annotation.CheckForNull;
 import javax.annotation.Nonnull;
 import org.jenkinsci.plugins.docker.commons.fingerprint.DockerFingerprints;
+import org.jenkinsci.plugins.docker.traceability.api.DockerTraceabilityReport;
 import org.jenkinsci.plugins.docker.traceability.DockerTraceabilityPlugin;
 import org.jenkinsci.plugins.docker.traceability.DockerTraceabilityPluginConfiguration;
 import org.jenkinsci.plugins.docker.traceability.DockerTraceabilityPluginTest;
@@ -42,7 +43,6 @@ import org.jenkinsci.plugins.docker.traceability.fingerprint.DockerContainerReco
 import org.jenkinsci.plugins.docker.traceability.fingerprint.DockerDeploymentFacet;
 import org.jenkinsci.plugins.docker.traceability.fingerprint.DockerDeploymentRefFacet;
 import org.jenkinsci.plugins.docker.traceability.fingerprint.DockerInspectImageFacet;
-import org.jenkinsci.plugins.docker.traceability.model.DockerTraceabilityReport;
 import org.jenkinsci.plugins.docker.traceability.samples.JSONSamples;
 import org.jenkinsci.plugins.docker.traceability.test.FingerprintTestUtil;
 import org.jenkinsci.plugins.docker.traceability.util.FingerprintsHelper;

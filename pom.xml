@@ -36,6 +36,7 @@
   <modules>
     <module>docker-java-shaded</module>
     <module>docker-traceability-plugin</module>
+    <module>docker-traceability-api</module>
   </modules>
 
   <build>

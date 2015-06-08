@@ -30,7 +30,7 @@ import javax.annotation.Nonnull;
 import org.jenkinsci.plugins.docker.traceability.core.DockerTraceabilityHelper;
 import org.jenkinsci.plugins.docker.traceability.dockerjava.api.command.InspectContainerResponse;
 import org.jenkinsci.plugins.docker.traceability.dockerjava.api.model.Event;
-import org.jenkinsci.plugins.docker.traceability.model.DockerTraceabilityReport;
+import org.jenkinsci.plugins.docker.traceability.api.DockerTraceabilityReport;
 
 /**
  * Stores an entry for {@link DockerDeploymentFacet}.

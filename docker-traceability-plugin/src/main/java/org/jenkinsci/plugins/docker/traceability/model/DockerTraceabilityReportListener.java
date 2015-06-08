@@ -32,7 +32,7 @@ import jenkins.model.Jenkins;
 import org.jenkinsci.plugins.docker.traceability.DockerTraceabilityPlugin;
 import org.jenkinsci.plugins.docker.traceability.fingerprint.DockerDeploymentFacet;
 import org.jenkinsci.plugins.docker.traceability.model.DockerEvent;
-import org.jenkinsci.plugins.docker.traceability.model.DockerTraceabilityReport;
+import org.jenkinsci.plugins.docker.traceability.api.DockerTraceabilityReport;
 
 /**
  * An extension point, which allows to subscribe to {@link DockerTraceabilityReport}s in Jenkins.
