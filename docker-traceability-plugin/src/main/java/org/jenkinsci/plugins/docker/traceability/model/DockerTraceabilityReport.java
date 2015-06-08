@@ -40,16 +40,16 @@ import org.apache.commons.lang.StringUtils;
 public class DockerTraceabilityReport {
 
     @JsonProperty
-    private Event event;
+    private @Nonnull Event event;
     
     @JsonProperty
-    private Info hostInfo;
+    private @Nonnull Info hostInfo;
     
     @JsonProperty(required = false)
-    private InspectContainerResponse container;
+    private @CheckForNull InspectContainerResponse container;
     
     @JsonProperty(required = false)
-    private InspectImageResponse image;
+    private @CheckForNull InspectImageResponse image;
     
     @JsonProperty(required = false)
     private @CheckForNull String imageId;
@@ -61,7 +61,7 @@ public class DockerTraceabilityReport {
     private @CheckForNull String environment;
     
     @JsonProperty
-    private List<String> parents;
+    private @Nonnull List<String> parents;
       
     /**
      * Stub constructor for deserialization purposes.

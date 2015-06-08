@@ -92,6 +92,11 @@ public class DockerTraceabilityReportListenerImpl extends DockerTraceabilityRepo
                 return;
             }
         }
+        
+        if (imageId == null) { // Add the low-important warning
+            LOGGER.log(Level.FINE, "Cannot retrieve the imageId for container {0}. "
+                    + "Image fingerprints won't be created", report.getContainerId());
+        }
                
         // Update containerInfo if available
         final InspectContainerResponse containerInfo = report.getContainer();
