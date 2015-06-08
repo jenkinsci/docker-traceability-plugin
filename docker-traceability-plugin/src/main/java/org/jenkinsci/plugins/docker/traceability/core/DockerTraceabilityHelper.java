@@ -41,7 +41,7 @@ import org.jenkinsci.plugins.docker.traceability.dockerjava.api.command.InspectI
 import org.jenkinsci.plugins.docker.traceability.fingerprint.DockerContainerRecord;
 import org.jenkinsci.plugins.docker.traceability.fingerprint.DockerDeploymentFacet;
 import org.jenkinsci.plugins.docker.traceability.fingerprint.DockerInspectImageFacet;
-import org.jenkinsci.plugins.docker.traceability.model.DockerTraceabilityReport;
+import org.jenkinsci.plugins.docker.traceability.api.DockerTraceabilityReport;
 import org.jenkinsci.plugins.docker.traceability.util.FingerprintsHelper;
 
 /**

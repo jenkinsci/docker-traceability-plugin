@@ -27,7 +27,7 @@ import hudson.Extension;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import org.jenkinsci.plugins.docker.traceability.model.DockerTraceabilityReportListener;
-import org.jenkinsci.plugins.docker.traceability.model.DockerTraceabilityReport;
+import org.jenkinsci.plugins.docker.traceability.api.DockerTraceabilityReport;
 import org.kohsuke.accmod.Restricted;
 import org.kohsuke.accmod.restrictions.NoExternalUse;
 

@@ -35,7 +35,7 @@ import org.jenkinsci.plugins.docker.commons.fingerprint.DockerFingerprintFacet;
 import org.jenkinsci.plugins.docker.commons.fingerprint.DockerFingerprints;
 import org.jenkinsci.plugins.docker.traceability.core.DockerTraceabilityHelper;
 import org.jenkinsci.plugins.docker.traceability.model.DockerEventType;
-import org.jenkinsci.plugins.docker.traceability.model.DockerTraceabilityReport;
+import org.jenkinsci.plugins.docker.traceability.api.DockerTraceabilityReport;
 import org.jenkinsci.plugins.docker.traceability.util.FingerprintsHelper;
 
 /**

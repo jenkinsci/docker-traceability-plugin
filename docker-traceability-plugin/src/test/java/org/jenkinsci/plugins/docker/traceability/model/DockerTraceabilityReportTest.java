@@ -24,6 +24,7 @@
 
 package org.jenkinsci.plugins.docker.traceability.model;
 
+import org.jenkinsci.plugins.docker.traceability.api.DockerTraceabilityReport;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import java.io.IOException;
 import org.jenkinsci.plugins.docker.traceability.samples.JSONSamples;

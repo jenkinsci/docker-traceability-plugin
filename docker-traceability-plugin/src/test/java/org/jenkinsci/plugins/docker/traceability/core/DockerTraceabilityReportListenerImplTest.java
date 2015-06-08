@@ -25,13 +25,13 @@ package org.jenkinsci.plugins.docker.traceability.core;
 
 import java.util.LinkedList;
 import org.jenkinsci.plugins.docker.commons.fingerprint.DockerFingerprints;
+import org.jenkinsci.plugins.docker.traceability.api.DockerTraceabilityReport;
 import org.jenkinsci.plugins.docker.traceability.DockerTraceabilityPluginConfiguration;
 import org.jenkinsci.plugins.docker.traceability.DockerTraceabilityPluginTest;
 import org.jenkinsci.plugins.docker.traceability.dockerjava.api.command.InspectContainerResponse;
 import org.jenkinsci.plugins.docker.traceability.dockerjava.api.model.Event;
 import org.jenkinsci.plugins.docker.traceability.fingerprint.DockerDeploymentFacet;
 import org.jenkinsci.plugins.docker.traceability.model.DockerEvent;
-import org.jenkinsci.plugins.docker.traceability.model.DockerTraceabilityReport;
 import org.jenkinsci.plugins.docker.traceability.model.DockerTraceabilityReportListener;
 import org.jenkinsci.plugins.docker.traceability.samples.JSONSamples;
 import org.jenkinsci.plugins.docker.traceability.test.FingerprintTestUtil;
