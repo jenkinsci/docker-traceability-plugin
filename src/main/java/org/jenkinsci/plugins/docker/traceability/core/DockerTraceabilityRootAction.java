@@ -576,19 +576,22 @@ public class DockerTraceabilityRootAction implements RootAction, SearchableModel
      * Represents the different response formats (JSON, pretty JSON, XML).
      */
     private enum ResponseFormat {
-        JSON("json", "application/json;charset=UTF-8"),
-        PRETTYJSON("json-pretty", "application/json;charset=UTF-8"),
-        XML("xml", "application/xml;charset=UTF-8");
+        JSON("json", "application/json;charset=UTF-8", Boolean.FALSE),
+        PRETTYJSON("json-pretty", "application/json;charset=UTF-8", Boolean.TRUE),
+        XML("xml", "text/xml;charset=UTF-8", Boolean.FALSE);
 
         private String alias;
 
         private String contentType;
+        
+        private Boolean pretty;
 
         private static final ResponseFormat DEFAULT = JSON;
 
-        private ResponseFormat(final String alias, final String contentType) {
+        private ResponseFormat(final String alias, final String contentType, final Boolean pretty) {
             this.alias = alias;
             this.contentType = contentType;
+            this.pretty = pretty;
         }
 
         public static ResponseFormat fromAlias(final String alias) {
@@ -614,6 +617,10 @@ public class DockerTraceabilityRootAction implements RootAction, SearchableModel
         public String getContentType() {
             return contentType;
         }
+
+        public Boolean getPretty() {
+            return pretty;
+        }
     }
 
     /**
@@ -631,7 +638,7 @@ public class DockerTraceabilityRootAction implements RootAction, SearchableModel
                 ObjectMapper mapper = new ObjectMapper();
                 ResponseFormat responseFormat = ResponseFormat.fromAlias(format);
                 rsp.setContentType(responseFormat.getContentType());
-                if (responseFormat.equals(ResponseFormat.PRETTYJSON)) {
+                if (responseFormat.getPretty()) {
                     mapper.enable(SerializationFeature.INDENT_OUTPUT);
                 }
                 mapper.writeValue(rsp.getWriter(), item);
