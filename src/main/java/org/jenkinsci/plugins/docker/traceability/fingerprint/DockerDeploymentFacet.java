@@ -75,7 +75,7 @@ public class DockerDeploymentFacet extends DockerFingerprintFacet {
      * Get Image ID, for which the container has been created.
      * This method is required, because the imageId may be missing in particular records.
      * A common case - DIE event for a container with the deleted image.
-     * @return Commonly nonnull, but may be null in corner-cases
+     * @return Commonly a {@code non-null} value, but may be {@code null} in corner-cases
      */
     public synchronized @CheckForNull String getImageId() {
         for (DockerContainerRecord record : deploymentRecords) {
