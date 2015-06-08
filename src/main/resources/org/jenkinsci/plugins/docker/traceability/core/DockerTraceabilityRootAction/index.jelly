@@ -98,7 +98,9 @@ THE SOFTWARE.
                     <br/>
                     ${%ID/Source}: <docker:container id="${containerId}"/>
                     <br/>
-                    ${%Base image}: <docker:image id="${lastRecord.report.imageId}"/>
+                    ${%Base image}: &quot;${lastRecord.report.imageName}&quot;
+                    <br/>
+                    ${%Base image ID}: <docker:image id="${facet.imageId}"/>
                     <br/>
                     ${%Parent images}: <docker:parentImages parents="${lastRecord.report.parents}"/>
                   </td>          
