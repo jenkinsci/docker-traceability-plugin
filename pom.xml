@@ -15,9 +15,9 @@
   <url>http://wiki.jenkins-ci.org/display/JENKINS/CloudBees+Docker+Traceability</url>
 
   <scm>
-    <connection>scm:git:ssh://github.com/jenkinsci/docker-plugin.git</connection>
-    <developerConnection>scm:git:ssh://git@github.com/jenkinsci/docker-plugin.git</developerConnection>
-    <url>https://github.com/jenkinsci/docker-plugin</url>
+    <connection>scm:git:ssh://github.com/jenkinsci/docker-traceability-plugin.git</connection>
+    <developerConnection>scm:git:ssh://git@github.com/jenkinsci/docker-traceability-plugin.git</developerConnection>
+    <url>https://github.com/jenkinsci/docker-traceability-plugin</url>
     <tag>HEAD</tag>
   </scm>
 
