@@ -111,4 +111,3 @@ public class DockerTraceabilityPlugin extends Plugin {
         load();
     }
 }
-

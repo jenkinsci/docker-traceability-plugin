@@ -9,7 +9,7 @@
   <artifactId>docker-java-shaded-traceability</artifactId>
   <packaging>jar</packaging>
   <version>1.0-beta-4-SNAPSHOT</version>
-  <name>docker-java shaded for Cloudbees Docker Traceability</name>
+  <name>docker-java shaded for CloudBees Docker Traceability</name>
 
   <properties>
     <docker-java.version>1.3.0</docker-java.version>
