@@ -458,7 +458,7 @@ public class DockerTraceabilityRootAction implements RootAction, SearchableModel
      * @throws IOException Processing error
      * @throws ServletException Servlet error
      *
-     * @return Response available in different formats {@link HttpResponse}
+     * @return Response ({@link HttpResponse}) available in different formats
      */
     public HttpResponse doRawImageInfo(@QueryParameter(required = true) String id, @QueryParameter(required = false) String format)
             throws IOException, ServletException {
@@ -576,20 +576,17 @@ public class DockerTraceabilityRootAction implements RootAction, SearchableModel
      * Represents the different response formats (JSON, pretty JSON, XML).
      */
     private enum ResponseFormat {
-        JSON("json", "application/json;charset=UTF-8", Boolean.FALSE),
-        PRETTYJSON("json-pretty", "application/json;charset=UTF-8", Boolean.TRUE),
-        XML("xml", "text/xml;charset=UTF-8", Boolean.FALSE);
-
-        private String alias;
+        JSON("application/json;charset=UTF-8", false),
+        PRETTYJSON("application/json;charset=UTF-8", true),
+        XML("text/xml;charset=UTF-8", false);
 
         private String contentType;
         
-        private Boolean pretty;
+        private boolean pretty;
 
         private static final ResponseFormat DEFAULT = JSON;
 
-        private ResponseFormat(final String alias, final String contentType, final Boolean pretty) {
-            this.alias = alias;
+        private ResponseFormat(final String contentType, final boolean pretty) {
             this.contentType = contentType;
             this.pretty = pretty;
         }
@@ -608,10 +605,6 @@ public class DockerTraceabilityRootAction implements RootAction, SearchableModel
             } else {
                 throw new IllegalStateException("Unsupported format: " + alias);
             }
-        }
-
-        public String getAlias() {
-            return alias;
         }
 
         public String getContentType() {
