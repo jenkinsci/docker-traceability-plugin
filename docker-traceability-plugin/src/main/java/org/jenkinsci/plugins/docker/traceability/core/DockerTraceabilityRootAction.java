@@ -345,7 +345,7 @@ public class DockerTraceabilityRootAction implements RootAction, SearchableModel
      * Supports filers. Missing &quot;since&quot; and &quot;until&quot; 
      * @param id ID of the container, for which the info should be retrieved.
      *    Short container IDs are not supported.
-     * @param format Format used in the response
+     * @param format Format used in the response. See {@link ResponseFormat} for supported format.
      * @throws IOException Processing error
      * @throws ServletException Servlet error
      * @return Response available in different formats, including a JSON output compatible with docker inspect
@@ -380,7 +380,7 @@ public class DockerTraceabilityRootAction implements RootAction, SearchableModel
      *      If the value equals to 0, the filter will be ignored (default in {@link QueryParameter}).
      * @param until End time. 
      *      If the value equals to 0, the filter will be ignored (default in {@link QueryParameter}).
-     * @param format Format used in the response.
+     * @param format Format used in the response. See {@link ResponseFormat} for supported format.
      * @throws IOException Processing error
      * @throws ServletException Servlet error
      * @return Response available in different formats. may be an error if something breaks.
@@ -449,7 +449,7 @@ public class DockerTraceabilityRootAction implements RootAction, SearchableModel
      *
      * @param id ID of the image, for which the info should be retrieved.
      *    Short container IDs are not supported.
-     * @param format Format used in the output response.
+     * @param format Format used in the output response. See {@link ResponseFormat} for supported format.
      *
      * @throws IOException Processing error
      * @throws ServletException Servlet error
@@ -569,12 +569,11 @@ public class DockerTraceabilityRootAction implements RootAction, SearchableModel
     }
 
     /**
-     * Represents the different response formats (JSON, pretty JSON, XML).
+     * Represents the supported response formats (JSON, pretty JSON).
      */
     private enum ResponseFormat {
         JSON("application/json;charset=UTF-8", false),
-        PRETTYJSON("application/json;charset=UTF-8", true),
-        XML("text/xml;charset=UTF-8", false);
+        PRETTYJSON("application/json;charset=UTF-8", true);
 
         private String contentType;
         
@@ -595,9 +594,6 @@ public class DockerTraceabilityRootAction implements RootAction, SearchableModel
                 return JSON;
             } else if (alias.equals("json-pretty")) {
                 return PRETTYJSON;
-            } else if (alias.equals("xml")) {
-                 // Related to https://issues.jenkins-ci.org/browse/JENKINS-28727
-                throw new IllegalStateException("Unsupported format: " + alias);
             } else {
                 throw new IllegalStateException("Unsupported format: " + alias);
             }
