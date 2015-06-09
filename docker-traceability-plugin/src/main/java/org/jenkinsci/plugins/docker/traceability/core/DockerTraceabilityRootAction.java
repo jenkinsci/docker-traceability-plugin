@@ -612,7 +612,7 @@ public class DockerTraceabilityRootAction implements RootAction, SearchableModel
      * Serves the response and manages its output format in the response.
      *
      * @param item Data to be serialized
-     * @param format Format used in the response
+     * @param format Format used in the response. See {@link ResponseFormat} for supported format.
      *
      * @return HTTP response with MIME type
      */
