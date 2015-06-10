@@ -8,7 +8,7 @@
   <groupId>org.jenkins-ci.plugins</groupId>
   <artifactId>docker-java-shaded-traceability</artifactId>
   <packaging>jar</packaging>
-  <version>1.0-beta-6-SNAPSHOT</version>
+  <version>1.0</version>
   <name>docker-java shaded for CloudBees Docker Traceability</name>
 
   <dependencies>
