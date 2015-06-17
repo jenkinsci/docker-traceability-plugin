@@ -101,6 +101,7 @@
           </dependencies>
           <configuration>
             <dependentWarExcludes>org.apache.httpcomponents:*,com.github.dockerjava*:*,com.google.guava*</dependentWarExcludes>
+            <warLibExcludes>docker-java-${docker-java.version}.jar,docker-traceability-api-${project.version}.jar</warLibExcludes>
             <archive>
               <manifestEntries>
                 <Mask-Classes>com.google.common</Mask-Classes>
