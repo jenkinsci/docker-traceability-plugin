@@ -55,8 +55,10 @@ public class DockerTraceabilityReportListenerImpl extends DockerTraceabilityRepo
         
         try {
             processReport(report);
+        } catch (IOException ex) {
+            LOGGER.log(Level.WARNING, "Cannot process the report " + report, ex);
         } catch (Throwable ex) { // Catch everything
-            LOGGER.log(Level.WARNING, "Cannot retrieve the fingerprint", ex);
+            LOGGER.log(Level.SEVERE, "Cannot process the report " + report + ". Unexpected error", ex);
         } 
     }   
     
