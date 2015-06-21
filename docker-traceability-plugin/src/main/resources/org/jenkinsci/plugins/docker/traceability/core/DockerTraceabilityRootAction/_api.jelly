@@ -80,7 +80,7 @@
       padding-left: 0;
     }
 
-    #docker-traceability > ul > li > dl {
+    #docker-traceability > ul > li:last-child > dl {
       margin-bottom: 0;
     }
 
@@ -132,6 +132,12 @@
   <p>Query Parameters:</p>
   <ul>
     <li><dfn><code>id</code></dfn>ID of the container. Only full 64-symbol IDs are supported</li>
+    <li><dfn><code>format</code></dfn>Format used in the response. Supported values:
+      <dl>
+        <dt><code>json</code> (default value)</dt>
+        <dt><code>json-pretty</code></dt>
+      </dl>
+    </li>
   </ul>
 
   <h4 class="entry-point">$(JENKINS_URL)/docker-traceability/queryContainer</h4>
@@ -156,6 +162,12 @@
         <dd>Outputs all available data in an internal format</dd>
       </dl>
     </li>
+    <li><dfn><code>format</code></dfn>Format used in the response. Supported values:
+      <dl>
+        <dt><code>json</code> (default value)</dt>
+        <dt><code>json-pretty</code></dt>
+      </dl>
+    </li>
   </ul>
 
   <h4 class="entry-point">$(JENKINS_URL)/docker-traceability/rawImageInfo</h4>
@@ -164,6 +176,12 @@
   <p>Query Parameters:</p>
   <ul>
     <li><dfn><code>id</code></dfn>ID of the image. Only full 64-symbol IDs are supported</li>
+    <li><dfn><code>format</code></dfn>Format used in the response. Supported values:
+      <dl>
+        <dt><code>json</code> (default value)</dt>
+        <dt><code>json-pretty</code></dt>
+      </dl>
+    </li>
   </ul>
   <h3>Managing data</h3>
   <p>Docker Deployment <strong>SUBMIT</strong> permission is required for all commands.</p>
@@ -178,7 +196,7 @@
     <li><dfn><code>hostId</code></dfn>Optional ID of the source Docker host. Default value - &quot;unknown&quot;</li>
     <li><dfn><code>hostName</code></dfn>Optional ID of the source Docker host name. Default value - &quot;unknown&quot;</li>
     <li><dfn><code>status</code></dfn>Optional status of the container. Default value - &quot;NONE&quot; (means that there is no status change)</li>
-    <li><dfn><code>time</code></dfn>Optional event time, the current server's time will be used by default. The time is specified in seconds since January 1, 1970, 00:00:00 GMT</li>
+    <li><dfn><code>time</code></dfn>Optional event time, the current server's time will be used by default. The time is specified in <a href="https://en.wikipedia.org/wiki/Unix_time">Unix time</a></li>
     <li><dfn><code>imageName</code></dfn>Optional name of the image. It can be extracted from &quot;docker images&quot; command output</li>
     <li><dfn><code>environment</code></dfn>Optional free-style string describing the environment</li>
   </ul>
@@ -204,7 +222,7 @@
     <dd><strong>Data format:</strong> Single JSON entry similar to the output of the <a href="https://docs.docker.com/reference/api/docker_remote_api_v1.16/#inspect-a-container">docker inspect $(containerId)</a> command</dd>
     <dt>image</dt>
     <dd>Optional info about the image status. If the info is available, the summary info will be added to the image fingerprint page.</dd>
-    <dd><strong>Data format:</strong> Single JSON entry similar to the output of the<a href="https://docs.docker.com/reference/api/docker_remote_api_v1.16/#inspect-an-image">docker inspect $(imageId)</a> command</dd>
+    <dd><strong>Data format:</strong> Single JSON entry similar to the output of the <a href="https://docs.docker.com/reference/api/docker_remote_api_v1.16/#inspect-an-image">docker inspect $(imageId)</a> command</dd>
     <dt>imageId</dt>
     <dd>ID of the image, which may be retrieved from the container info.</dd>
     <dd><strong>Data format:</strong> String. Only full 64-symbol IDs are supported</dd>
