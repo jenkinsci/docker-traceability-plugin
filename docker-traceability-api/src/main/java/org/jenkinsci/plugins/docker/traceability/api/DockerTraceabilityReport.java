@@ -32,6 +32,7 @@ import com.github.dockerjava.api.model.Info;
 import java.util.ArrayList;
 import java.util.Collections;
 
+import java.util.LinkedList;
 import java.util.List;
 import javax.annotation.CheckForNull;
 import javax.annotation.Nonnull;
@@ -68,6 +69,9 @@ public class DockerTraceabilityReport {
      * Stub constructor for deserialization purposes.
      */
     public DockerTraceabilityReport() {
+        event = new Event();
+        hostInfo = new Info();
+        parents = new LinkedList<String>();
     }
     
     public DockerTraceabilityReport(@Nonnull Event event, @Nonnull Info hostInfo, 
