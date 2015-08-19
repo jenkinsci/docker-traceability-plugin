@@ -30,12 +30,12 @@
   <parent>
     <groupId>org.jenkins-ci.plugins</groupId>
     <artifactId>docker-traceability-parent</artifactId>
-    <version>1.1-SNAPSHOT</version>
+    <version>1.1</version>
     <relativePath>../pom.xml</relativePath>
   </parent>
 
   <artifactId>docker-traceability</artifactId>
-  <version>1.1-SNAPSHOT</version>
+  <version>1.1</version>
   <packaging>hpi</packaging>
 
   <name>CloudBees Docker Traceability</name>
