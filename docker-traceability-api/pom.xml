@@ -29,7 +29,7 @@
 
   <groupId>org.jenkins-ci.plugins</groupId>
   <artifactId>docker-traceability-api</artifactId>
-  <version>1.1-SNAPSHOT</version>
+  <version>1.2-SNAPSHOT</version>
   <packaging>jar</packaging>
 
   <name>CloudBees Docker Traceability API</name>
@@ -113,6 +113,16 @@
             </configuration>
           </execution>
         </executions>
+      </plugin>
+      <plugin>
+        <groupId>org.codehaus.mojo</groupId>
+        <artifactId>findbugs-maven-plugin</artifactId>
+        <version>3.0.1</version>
+        <configuration>
+          <xmlOutput>true</xmlOutput>
+          <findbugsXmlWithMessages>true</findbugsXmlWithMessages>
+          <failOnError>false</failOnError>
+        </configuration>
       </plugin>
     </plugins>
   </build>

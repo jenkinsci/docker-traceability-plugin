@@ -80,7 +80,7 @@ public class DockerInspectImageFacet extends DockerFingerprintFacet {
     
     private void updateData(@Nonnull InspectImageResponse data, long reportTimeInSeconds,
             @CheckForNull String imageName) throws IOException {
-        if (reportTimeInSeconds > reportTimeInSeconds) {
+        if (reportTimeInSeconds > this.reportTimeInSeconds) {
             this.data = data;
             this.reportTimeInSeconds = reportTimeInSeconds;         
         }

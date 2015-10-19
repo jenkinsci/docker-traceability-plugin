@@ -30,12 +30,12 @@
   <parent>
     <groupId>org.jenkins-ci.plugins</groupId>
     <artifactId>docker-traceability-parent</artifactId>
-    <version>1.1-SNAPSHOT</version>
+    <version>1.2-SNAPSHOT</version>
     <relativePath>../pom.xml</relativePath>
   </parent>
 
   <artifactId>docker-traceability</artifactId>
-  <version>1.1-SNAPSHOT</version>
+  <version>1.2-SNAPSHOT</version>
   <packaging>hpi</packaging>
 
   <name>CloudBees Docker Traceability</name>
@@ -146,6 +146,16 @@
             </configuration>
           </execution>
         </executions>
+      </plugin>
+      <plugin>
+        <groupId>org.codehaus.mojo</groupId>
+        <artifactId>findbugs-maven-plugin</artifactId>
+        <version>3.0.1</version>
+        <configuration>
+          <xmlOutput>true</xmlOutput>
+          <findbugsXmlWithMessages>true</findbugsXmlWithMessages>
+          <failOnError>false</failOnError>
+        </configuration>
       </plugin>
     </plugins>
   </build>
