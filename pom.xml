@@ -22,7 +22,7 @@
   </scm>
 
   <properties>
-    <maven-release-plugin.version>2.5.1</maven-release-plugin.version>
+    <maven-release-plugin.version>2.5.2</maven-release-plugin.version>
     <hpi.plugin.version>1.112</hpi.plugin.version>
     <stapler.version>1.207</stapler.version>
     <guava.version>18.0</guava.version>
@@ -66,10 +66,9 @@
       <plugin>
         <groupId>org.codehaus.mojo</groupId>
         <artifactId>findbugs-maven-plugin</artifactId>
-        <version>3.0.1</version>
+        <version>3.0.2</version>
         <configuration>
           <xmlOutput>true</xmlOutput>
-          <findbugsXmlWithMessages>true</findbugsXmlWithMessages>
           <failOnError>false</failOnError>
         </configuration>
       </plugin>

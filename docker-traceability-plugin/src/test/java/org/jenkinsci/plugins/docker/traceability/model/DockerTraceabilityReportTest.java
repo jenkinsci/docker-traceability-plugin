@@ -26,6 +26,7 @@ package org.jenkinsci.plugins.docker.traceability.model;
 
 import org.jenkinsci.plugins.docker.traceability.api.DockerTraceabilityReport;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.SerializationFeature;
 import java.io.IOException;
 import org.jenkinsci.plugins.docker.traceability.samples.JSONSamples;
 import static org.junit.Assert.assertEquals;
@@ -41,6 +42,7 @@ public class DockerTraceabilityReportTest {
     @Test
     public void jsonRoundTrip() throws IOException {
         ObjectMapper mapper = new ObjectMapper();
+        mapper.enable(SerializationFeature.ORDER_MAP_ENTRIES_BY_KEYS);
         DockerTraceabilityReport report = JSONSamples.submitReport.readObject(DockerTraceabilityReport.class);
         assertNotNull(report.getContainer());
         assertNotNull(report.getEvent());
