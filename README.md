@@ -27,7 +27,8 @@ This [Jenkins](http://jenkins-ci.org) plugin allows the tracking of the creation
       Web interfaces are being managed by common Jenkins Read permission
  * **Submit** - Allows the submission deployment records from the [remote API](#API)
  * **Delete** - Allows the deletion deployment records or entire fingerprints
-4. Setup the Docker image fingerprint creation mode
+4. Enable `Show Docker Traceability action on the main side panel` in Jenkins Global Configuration
+5. Setup the Docker image fingerprint creation mode
  * By default, the plugin does not create image fingerprints on its own. These fingerprints are expected to be created by other Docker plugins based on [Docker Commons][docker-commons]
   * The behavior can be adjusted on the plugin's global configuration page
 
