@@ -30,6 +30,7 @@ import java.util.logging.Logger;
 import javax.annotation.Nonnull;
 import jenkins.model.Jenkins;
 import org.jenkinsci.plugins.docker.traceability.DockerTraceabilityPlugin;
+import org.jenkinsci.plugins.docker.traceability.JenkinsInstance;
 import org.jenkinsci.plugins.docker.traceability.fingerprint.DockerDeploymentFacet;
 import org.jenkinsci.plugins.docker.traceability.model.DockerEvent;
 import org.jenkinsci.plugins.docker.traceability.api.DockerTraceabilityReport;
@@ -94,7 +95,7 @@ public class DockerTraceabilityReportListener implements ExtensionPoint {
      * @return A list of all {@link DockerTraceabilityReportListener} extensions.
      */
     public static @Nonnull ExtensionList<DockerTraceabilityReportListener> all() {
-        final Jenkins j = Jenkins.getInstance();
+        final Jenkins j = JenkinsInstance.get();
         if (j == null) {
             return ExtensionList.create((Jenkins) null, DockerTraceabilityReportListener.class);
         }

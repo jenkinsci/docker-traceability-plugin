@@ -35,6 +35,8 @@ import javax.annotation.Nonnull;
 import javax.servlet.ServletException;
 import jenkins.model.Jenkins;
 import net.sf.json.JSONObject;
+
+import org.jenkinsci.plugins.docker.traceability.core.DockerTraceabilityRootAction;
 import org.kohsuke.stapler.StaplerRequest;
 import org.kohsuke.stapler.export.ExportedBean;
 
@@ -57,7 +59,7 @@ public class DockerTraceabilityPlugin extends Plugin {
     
     /**
      * Allows to delete entries like container references.
-     * @see DockerEventsAction#doRemoveContainer(org.kohsuke.stapler.StaplerRequest, org.kohsuke.stapler.StaplerResponse, java.lang.String)
+     * @see DockerTraceabilityRootAction#doDeleteContainer(String)
      */
     public static final Permission DELETE = new Permission(PERMISSIONS,"Delete", Messages._DockerDeployment_Permissions_Delete_Permission_Description(), Jenkins.ADMINISTER, PermissionScope.JENKINS);
      
@@ -69,7 +71,7 @@ public class DockerTraceabilityPlugin extends Plugin {
      * @throws IllegalStateException the plugin has not been loaded yet
      */
     public static @Nonnull DockerTraceabilityPlugin getInstance() {
-        Jenkins j = Jenkins.getInstance();
+        Jenkins j = JenkinsInstance.get();
         DockerTraceabilityPlugin plugin = j != null ? j.getPlugin(DockerTraceabilityPlugin.class) : null;
         if (plugin == null) { // Fail horribly
             // TODO: throw a graceful error

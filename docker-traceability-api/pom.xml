@@ -52,35 +52,6 @@
   </licenses>
 
   <build>
-    <pluginManagement>
-      <!--  override parents so we can compile with 1.7 -->
-      <plugins>
-        <plugin>
-          <!-- make sure our code doesn't have 1.8 dependencies except where we know it -->
-          <!-- we depend on docker-java that uses 1.7 even though we don't require it. -->
-          <groupId>org.codehaus.mojo</groupId>
-          <artifactId>animal-sniffer-maven-plugin</artifactId>
-          <version>1.14</version>
-          <executions>
-            <execution>
-              <goals>
-                <goal>check</goal>
-              </goals>
-              <phase>test</phase>
-            </execution>
-          </executions>
-          <configuration>
-            <!-- outside <execution> so that we can run 'animal-sniffer:check' from the top without breaking anything  -->
-            <signature>
-              <groupId>org.codehaus.mojo.signature</groupId>
-              <artifactId>java17</artifactId>
-              <version>1.0</version>
-            </signature>
-          </configuration>
-        </plugin>
-      </plugins>
-    </pluginManagement>
-
     <plugins>
       <plugin>
         <groupId>com.mycila</groupId>
@@ -94,36 +65,6 @@
           <skipExistingHeaders>true</skipExistingHeaders>
         </configuration>
       </plugin>
-      <plugin>
-        <artifactId>maven-enforcer-plugin</artifactId>
-        <version>1.0.1</version>
-        <executions>
-          <execution>
-            <id>enforce-jdk</id>
-            <goals>
-              <goal>enforce</goal>
-            </goals>
-            <configuration>
-              <rules>
-                <requireJavaVersion>
-                  <version>[1.7,)</version>
-                  <message>Build with Java 1.7 or later, docker-java uses 1.7 APIs and bytecode.</message>
-                </requireJavaVersion>
-              </rules>
-            </configuration>
-          </execution>
-        </executions>
-      </plugin>
-      <plugin>
-        <groupId>org.codehaus.mojo</groupId>
-        <artifactId>findbugs-maven-plugin</artifactId>
-        <version>3.0.1</version>
-        <configuration>
-          <xmlOutput>true</xmlOutput>
-          <findbugsXmlWithMessages>true</findbugsXmlWithMessages>
-          <failOnError>false</failOnError>
-        </configuration>
-      </plugin>
     </plugins>
   </build>
 
@@ -132,6 +73,20 @@
       <groupId>com.github.docker-java</groupId>
       <artifactId>docker-java</artifactId>
       <version>${docker-java.version}</version>
+      <exclusions>
+        <exclusion>
+          <groupId>org.apache.httpcomponents</groupId>
+          <artifactId>httpclient</artifactId>
+        </exclusion>
+        <exclusion>
+          <groupId>org.apache.httpcomponents</groupId>
+          <artifactId>httpmime</artifactId>
+        </exclusion>
+        <exclusion>
+          <groupId>org.glassfish.hk2</groupId>
+          <artifactId>hk2-utils</artifactId>
+        </exclusion>
+      </exclusions>
     </dependency>
     <dependency>
       <groupId>com.google.code.findbugs</groupId>

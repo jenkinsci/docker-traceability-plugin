@@ -3,10 +3,9 @@
   <parent>
     <groupId>org.jenkins-ci.plugins</groupId>
     <artifactId>plugin</artifactId>
-    <version>1.565.3</version>
+    <version>2.9</version>
   </parent>
 
-  <groupId>org.jenkins-ci.plugins</groupId>
   <artifactId>docker-traceability-parent</artifactId>
   <version>1.2-SNAPSHOT</version>
   <packaging>pom</packaging>
@@ -22,15 +21,10 @@
   </scm>
 
   <properties>
-    <maven-release-plugin.version>2.5.1</maven-release-plugin.version>
-    <hpi.plugin.version>1.112</hpi.plugin.version>
-    <stapler.version>1.207</stapler.version>
-    <guava.version>18.0</guava.version>
-    <jenkins.parent.version>${project.parent.version}</jenkins.parent.version>
     <jdk.debug>true</jdk.debug>
     <jdk.optimize>false</jdk.optimize>
-    <jdk.source>1.7</jdk.source>
-    <jdk.target>1.7</jdk.target>
+    <java.level>7</java.level>
+    <jenkins.version>1.565.3</jenkins.version>
   </properties>
 
   <modules>
@@ -51,10 +45,7 @@
         <plugin>
           <groupId>org.apache.maven.plugins</groupId>
           <artifactId>maven-compiler-plugin</artifactId>
-          <version>${maven-compiler-plugin.version}</version>
           <configuration>
-            <source>${jdk.source}</source>
-            <target>${jdk.target}</target>
             <debug>${jdk.debug}</debug>
             <optimize>${jdk.optimize}</optimize>
           </configuration>
@@ -62,18 +53,6 @@
       </plugins>
     </pluginManagement>
     <finalName>${project.artifactId}</finalName>
-    <plugins>
-      <plugin>
-        <groupId>org.codehaus.mojo</groupId>
-        <artifactId>findbugs-maven-plugin</artifactId>
-        <version>3.0.1</version>
-        <configuration>
-          <xmlOutput>true</xmlOutput>
-          <findbugsXmlWithMessages>true</findbugsXmlWithMessages>
-          <failOnError>false</failOnError>
-        </configuration>
-      </plugin>
-    </plugins>
   </build>
 
   <repositories>
@@ -96,6 +75,5 @@
       <url>http://maven.jenkins-ci.org:8081/content/repositories/releases/</url>
     </repository>
   </distributionManagement>
-
 </project>
 
