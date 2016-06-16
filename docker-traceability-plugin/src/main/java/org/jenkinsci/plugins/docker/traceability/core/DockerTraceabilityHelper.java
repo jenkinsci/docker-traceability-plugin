@@ -37,7 +37,6 @@ import javax.annotation.Nonnull;
 import jenkins.model.Jenkins;
 import org.jenkinsci.plugins.docker.commons.fingerprint.DockerFingerprints;
 import org.jenkinsci.plugins.docker.traceability.DockerTraceabilityPlugin;
-import org.jenkinsci.plugins.docker.traceability.JenkinsInstance;
 import org.jenkinsci.plugins.docker.traceability.dockerjava.api.command.InspectImageResponse;
 import org.jenkinsci.plugins.docker.traceability.fingerprint.DockerContainerRecord;
 import org.jenkinsci.plugins.docker.traceability.fingerprint.DockerDeploymentFacet;
@@ -77,7 +76,7 @@ public class DockerTraceabilityHelper {
      * @throws IOException Fingerprint loading error
      */
     public static @CheckForNull Fingerprint ofValidated(@Nonnull String containerId) throws IOException {
-        final Jenkins jenkins = JenkinsInstance.get();
+        final Jenkins jenkins = Jenkins.getInstance();
         if (jenkins == null) {
             return null;
         }
@@ -109,7 +108,7 @@ public class DockerTraceabilityHelper {
      */
     public static @CheckForNull Fingerprint make(@Nonnull String containerId, 
             @CheckForNull String name) throws IOException {
-        final Jenkins jenkins = JenkinsInstance.get();
+        final Jenkins jenkins = Jenkins.getInstance();
         if (jenkins == null) {
             return null;
         }
@@ -129,7 +128,7 @@ public class DockerTraceabilityHelper {
      */
     public static @CheckForNull Fingerprint makeImage(@Nonnull String imageId, 
             @CheckForNull String name, long timestamp) throws IOException {
-        final Jenkins jenkins = JenkinsInstance.get();
+        final Jenkins jenkins = Jenkins.getInstance();
         if (jenkins == null) {
             return null;
         }

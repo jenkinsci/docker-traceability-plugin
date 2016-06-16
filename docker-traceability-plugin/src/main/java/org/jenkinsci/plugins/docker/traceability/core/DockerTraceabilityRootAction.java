@@ -61,7 +61,6 @@ import org.apache.commons.lang.StringUtils;
 import org.jenkinsci.plugins.docker.traceability.api.DockerTraceabilityReport;
 import org.jenkinsci.plugins.docker.traceability.model.DockerTraceabilityReportListener;
 import org.jenkinsci.plugins.docker.traceability.DockerTraceabilityPlugin;
-import org.jenkinsci.plugins.docker.traceability.JenkinsInstance;
 import org.jenkinsci.plugins.docker.traceability.dockerjava.api.command.InspectContainerResponse;
 import org.jenkinsci.plugins.docker.traceability.dockerjava.api.command.InspectImageResponse;
 import org.jenkinsci.plugins.docker.traceability.dockerjava.api.model.Event;
@@ -293,7 +292,7 @@ public class DockerTraceabilityRootAction implements RootAction, SearchableModel
             @QueryParameter(required = true) String id) 
             throws IOException, ServletException {  
         checkPermission(Jenkins.READ);
-        Jenkins j = JenkinsInstance.get();
+        Jenkins j = Jenkins.getInstance();
         if (j == null) {
             rsp.sendError(500, "Jenkins is not ready");
             return;
@@ -330,7 +329,7 @@ public class DockerTraceabilityRootAction implements RootAction, SearchableModel
             @QueryParameter(required = true) String id) 
             throws IOException, ServletException {  
         checkPermission(Jenkins.READ);
-        Jenkins j = JenkinsInstance.get();
+        Jenkins j = Jenkins.getInstance();
         if (j == null) {
             rsp.sendError(500, "Jenkins is not ready");
             return;
@@ -475,7 +474,7 @@ public class DockerTraceabilityRootAction implements RootAction, SearchableModel
      * @throws AccessDeniedException Access denied
      */
     private void checkPermission(Permission p) throws AccessDeniedException {
-        final Jenkins j = JenkinsInstance.get();
+        final Jenkins j = Jenkins.getInstance();
         if (j == null) {
             throw new AccessDeniedException("Cannot retrieve Jenkins instance. "
                     + "Probably, the service is starting or shutting down");
@@ -489,7 +488,7 @@ public class DockerTraceabilityRootAction implements RootAction, SearchableModel
      * @retun false if the user has no permission or if Jenkins is unavailable
      */
     private boolean hasPermission(Permission p) {
-        final Jenkins j = JenkinsInstance.get();
+        final Jenkins j = Jenkins.getInstance();
         return (j == null) ? false : j.hasPermission(p);
     }
     
@@ -520,7 +519,7 @@ public class DockerTraceabilityRootAction implements RootAction, SearchableModel
     
     private synchronized SearchIndexBuilder makeSearchIndex() {
         final SearchIndexBuilder searchIndexBuilder = new SearchIndexBuilder();
-        Jenkins j = JenkinsInstance.get();
+        Jenkins j = Jenkins.getInstance();
         if (j == null || containerIDs == null) {
             return searchIndexBuilder; // cannot construct URLs 
         }
@@ -534,7 +533,7 @@ public class DockerTraceabilityRootAction implements RootAction, SearchableModel
     }
 
     private @Nonnull XmlFile getConfigFile() throws IOException {
-        final Jenkins j = JenkinsInstance.get();
+        final Jenkins j = Jenkins.getInstance();
         if (j==null) {
             throw new IOException("Jenkins instance is not ready, cannot retrieve the root directory");
         }
@@ -610,7 +609,7 @@ public class DockerTraceabilityRootAction implements RootAction, SearchableModel
      * @return Instance or null if it is not available
      */
     public static @CheckForNull DockerTraceabilityRootAction getInstance() {
-        Jenkins j = JenkinsInstance.get();
+        Jenkins j = Jenkins.getInstance();
         if (j == null) {
             return null;
         }

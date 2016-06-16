@@ -71,7 +71,7 @@ public class DockerTraceabilityPlugin extends Plugin {
      * @throws IllegalStateException the plugin has not been loaded yet
      */
     public static @Nonnull DockerTraceabilityPlugin getInstance() {
-        Jenkins j = JenkinsInstance.get();
+        Jenkins j = Jenkins.getInstance();
         DockerTraceabilityPlugin plugin = j != null ? j.getPlugin(DockerTraceabilityPlugin.class) : null;
         if (plugin == null) { // Fail horribly
             // TODO: throw a graceful error

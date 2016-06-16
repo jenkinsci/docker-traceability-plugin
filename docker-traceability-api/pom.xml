@@ -65,6 +65,26 @@
           <skipExistingHeaders>true</skipExistingHeaders>
         </configuration>
       </plugin>
+      <plugin>
+        <artifactId>maven-enforcer-plugin</artifactId>
+        <version>1.0.1</version>
+        <executions>
+          <execution>
+            <id>enforce-jdk</id>
+            <goals>
+              <goal>enforce</goal>
+            </goals>
+            <configuration>
+              <rules>
+                <requireJavaVersion>
+                  <version>[1.7,)</version>
+                  <message>Build with Java 1.7 or later, docker-java uses 1.7 APIs and bytecode.</message>
+                </requireJavaVersion>
+              </rules>
+            </configuration>
+          </execution>
+        </executions>
+      </plugin>
     </plugins>
   </build>
 
@@ -93,7 +113,7 @@
       <type>jar</type>
     </dependency>
   </dependencies>
-  
+
   <repositories>
     <repository>
       <id>repo.jenkins-ci.org</id>
