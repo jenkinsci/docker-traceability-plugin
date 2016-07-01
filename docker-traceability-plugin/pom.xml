@@ -43,6 +43,13 @@
   <url>http://wiki.jenkins-ci.org/display/JENKINS/CloudBees+Docker+Traceability</url>
   <inceptionYear>2015</inceptionYear>
 
+  <scm>
+    <connection>scm:git:ssh://github.com/jenkinsci/docker-traceability-plugin.git</connection>
+    <developerConnection>scm:git:ssh://git@github.com/jenkinsci/docker-traceability-plugin.git</developerConnection>
+    <url>https://github.com/jenkinsci/docker-traceability-plugin</url>
+    <tag>HEAD</tag>
+  </scm>
+
   <properties>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     <hpi.plugin.version>1.112</hpi.plugin.version>

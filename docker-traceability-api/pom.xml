@@ -43,6 +43,13 @@
     <docker-java.version>1.3.0</docker-java.version>
   </properties>
 
+  <scm>
+    <connection>scm:git:ssh://github.com/jenkinsci/docker-traceability-plugin.git</connection>
+    <developerConnection>scm:git:ssh://git@github.com/jenkinsci/docker-traceability-plugin.git</developerConnection>
+    <url>https://github.com/jenkinsci/docker-traceability-plugin</url>
+    <tag>HEAD</tag>
+  </scm>
+
   <licenses>
     <license>
       <name>MIT</name>
