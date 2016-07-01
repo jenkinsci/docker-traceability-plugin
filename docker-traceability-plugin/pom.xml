@@ -30,12 +30,12 @@
   <parent>
     <groupId>org.jenkins-ci.plugins</groupId>
     <artifactId>docker-traceability-parent</artifactId>
-    <version>1.2</version>
+    <version>1.3-SNAPSHOT</version>
     <relativePath>../pom.xml</relativePath>
   </parent>
 
   <artifactId>docker-traceability</artifactId>
-  <version>1.2</version>
+  <version>1.3-SNAPSHOT</version>
   <packaging>hpi</packaging>
 
   <name>CloudBees Docker Traceability</name>
@@ -47,7 +47,7 @@
     <connection>scm:git:ssh://github.com/jenkinsci/docker-traceability-plugin.git</connection>
     <developerConnection>scm:git:ssh://git@github.com/jenkinsci/docker-traceability-plugin.git</developerConnection>
     <url>https://github.com/jenkinsci/docker-traceability-plugin</url>
-    <tag>docker-traceability-parent-1.2</tag>
+    <tag>HEAD</tag>
   </scm>
 
   <properties>
