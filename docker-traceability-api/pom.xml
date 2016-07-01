@@ -52,35 +52,6 @@
   </licenses>
 
   <build>
-    <pluginManagement>
-      <!--  override parents so we can compile with 1.7 -->
-      <plugins>
-        <plugin>
-          <!-- make sure our code doesn't have 1.8 dependencies except where we know it -->
-          <!-- we depend on docker-java that uses 1.7 even though we don't require it. -->
-          <groupId>org.codehaus.mojo</groupId>
-          <artifactId>animal-sniffer-maven-plugin</artifactId>
-          <version>1.14</version>
-          <executions>
-            <execution>
-              <goals>
-                <goal>check</goal>
-              </goals>
-              <phase>test</phase>
-            </execution>
-          </executions>
-          <configuration>
-            <!-- outside <execution> so that we can run 'animal-sniffer:check' from the top without breaking anything  -->
-            <signature>
-              <groupId>org.codehaus.mojo.signature</groupId>
-              <artifactId>java17</artifactId>
-              <version>1.0</version>
-            </signature>
-          </configuration>
-        </plugin>
-      </plugins>
-    </pluginManagement>
-
     <plugins>
       <plugin>
         <groupId>com.mycila</groupId>
@@ -114,16 +85,6 @@
           </execution>
         </executions>
       </plugin>
-      <plugin>
-        <groupId>org.codehaus.mojo</groupId>
-        <artifactId>findbugs-maven-plugin</artifactId>
-        <version>3.0.1</version>
-        <configuration>
-          <xmlOutput>true</xmlOutput>
-          <findbugsXmlWithMessages>true</findbugsXmlWithMessages>
-          <failOnError>false</failOnError>
-        </configuration>
-      </plugin>
     </plugins>
   </build>
 
@@ -146,7 +107,7 @@
       <type>jar</type>
     </dependency>
   </dependencies>
-  
+
   <repositories>
     <repository>
       <id>repo.jenkins-ci.org</id>

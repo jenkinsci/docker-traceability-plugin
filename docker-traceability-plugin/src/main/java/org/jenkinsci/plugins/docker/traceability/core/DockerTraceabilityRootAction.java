@@ -307,6 +307,7 @@ public class DockerTraceabilityRootAction implements RootAction, SearchableModel
      * @param id Container ID. Method supports full 64-char IDs only.
      * @throws IOException Cannot save the updated {@link DockerTraceabilityRootAction}
      * @throws ServletException Servlet exception
+     * @return response
      */
     @RequirePOST
     public HttpResponse doDeleteContainer(@QueryParameter(required = true) String id) 
