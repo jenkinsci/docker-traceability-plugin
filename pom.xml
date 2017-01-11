@@ -13,6 +13,24 @@
 
   <url>http://wiki.jenkins-ci.org/display/JENKINS/CloudBees+Docker+Traceability</url>
 
+  <developers>
+    <developer>
+      <id>oleg_nenashev</id>
+      <name>Oleg Nenashev</name>
+      <email>o.v.nenashev@gmail.com</email>
+      <roles>
+        <role>maintainer (retired)</role>
+      </roles>
+    </developer>
+    <developer>
+      <id>ataylor</id>
+      <name>Alex Taylor</name>
+      <roles>
+        <role>maintainer</role>
+      </roles>
+    </developer>
+  </developers>
+  
   <scm>
     <connection>scm:git:ssh://github.com/jenkinsci/docker-traceability-plugin.git</connection>
     <developerConnection>scm:git:ssh://git@github.com/jenkinsci/docker-traceability-plugin.git</developerConnection>
