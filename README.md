@@ -2,7 +2,7 @@
 
 This [Jenkins](http://jenkins-ci.org) plugin allows the tracking of the creation and use of Docker containers in Jenkins and their future use.
 
-#Plugin Summary
+# Plugin Summary
 
 * Container deployments summary page
 * Tracking of Docker image and container deployments produced in Jenkins
@@ -15,9 +15,9 @@ This [Jenkins](http://jenkins-ci.org) plugin allows the tracking of the creation
  
  ![Main page](/doc/images/root-action.png)
 
-#Installation Guidelines
+# Installation Guidelines
 
-##Plugin setup
+## Plugin setup
 
 1. Install CloudBees Docker Traceability plugin from Jenkins Update Center
 2. Install other Jenkins plugins, which produce image fingerprints to be traced by the plugin (see [Integrations](#Integrations))
@@ -31,15 +31,15 @@ This [Jenkins](http://jenkins-ci.org) plugin allows the tracking of the creation
  * By default, the plugin does not create image fingerprints on its own. These fingerprints are expected to be created by other Docker plugins based on [Docker Commons][docker-commons]
   * The behavior can be adjusted on the plugin's global configuration page
 
-##Client-side configuration
+## Client-side configuration
 
 ```
 The section is under construction
 ```
 
-#Use-cases
+# Use-cases
 
-##Submitting deployment records
+## Submitting deployment records
 
 The plugin does not support an automatic polling of events from external Docker servers. The events should be submitted by external clients or other Jenkins plugins.
 
@@ -91,13 +91,13 @@ Raw data is accessible via the [plugin's API](#API) or via hyperlinks on info pa
 
 You can search deployments by container IDs using the "Search" control on the "Docker Traceability" page. You can also query containers using the [plugin's API](#API).
 
-#Integrations
+# Integrations
 
 CloudBees Docker Traceability plugin is based on fingerprints provided by [Docker Commons Plugin][docker-commons]. The plugin just adds additional  facets to main fingerprint pages, so any other plugin can contribute to the UI by adding additional facets to the fingerprint. 
 
 See [Docker Commons Plugin Wiki page][docker-commons] to get an info about existing fingerprint contributors.
 
-#API
+# API
 
 The detailed description of API endpoints is available in the "api" page of the "Docker Traceability" root action (see *$(JENKINS_URL)/docker-traceability/api*)
 
